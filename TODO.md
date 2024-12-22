@@ -1,2 +1,4 @@
 - [ ] Add button to email list
 - [ ] Add recipe linking functionality
+- [ ] Add .env file
+- [ ] Use EmailMessage object

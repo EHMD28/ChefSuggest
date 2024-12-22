@@ -1,7 +1,14 @@
+import os
+import smtplib
+import ssl
 import tkinter as tk
 from tkinter import ttk
 import json
 import random
+from email.message import EmailMessage
+from datetime import date
+
+from dotenv import load_dotenv
 
 
 def load_meals() -> list[str]:
@@ -59,28 +66,65 @@ class ChefSuggestWindow:
                 textvariable=suggestion,
                 background=ChefSuggestWindow.WINDOW_BG,
                 font=ChefSuggestWindow.WINDOW_FONT,
-                anchor="w",
+                anchor="nw",
                 justify="left",
                 padding=10,
             )
             label.pack(side="top", anchor="nw")
 
     def _add_buttons(self) -> None:
-        new_suggestions_button = ttk.Button(
-            self.root, text="Generate New Suggestions", command=self.new_suggestions
+        s = ttk.Style()
+        s.configure("MyFrame.TFrame", background=ChefSuggestWindow.WINDOW_BG)
+        self.buttons_panel = ttk.Frame(
+            self.root, width=400, height=50, style="MyFrame.TFrame"
         )
-        new_suggestions_button.pack()
+
+        new_suggestions_button = ttk.Button(
+            self.buttons_panel,
+            text="Generate New Suggestions",
+            command=self.new_suggestions,
+        )
+        email_list_button = ttk.Button(
+            self.buttons_panel,
+            text="Email Suggestions to Me",
+            command=self.email_suggestions,
+        )
+
+        new_suggestions_button.pack(padx=10, pady=5)
+        email_list_button.pack(padx=10, pady=5)
+        self.buttons_panel.pack()
 
     def new_suggestions(self) -> None:
         suggestions = get_suggestions(self.MEALS, self.NUM_SUGGESTIONS)
         for index, suggestion in enumerate(self.current_suggestions):
             suggestion.set(f"{index+1}. {suggestions[index]}")
 
+    def email_suggestions(self) -> None:
+        from_email = os.environ.get("CHEF_SUGGEST_EMAIL")
+        password = os.environ.get("CHEF_SUGGEST_EMAIL_PASSWORD")
+        to_email = os.environ.get("LIST_RECEIVER")
+        msg = EmailMessage()
+        today = date.today().strftime("%B %d, %Y")
+        msg["Subject"] = f"Dinner Suggestions From {today}"
+        msg["From"] = from_email
+        msg["To"] = to_email
+        suggestions: list[str] = [s.get() for s in self.current_suggestions]
+        msg_content: str = ""
+        for index, suggestion in enumerate(suggestions):
+            msg_content += f"{index+1}. {suggestion}\n"
+        msg.set_content(msg_content)
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(from_email, password)
+            server.send_message(msg)
+
     def start(self) -> None:
         self.root.mainloop()
 
 
 def main() -> None:
+    load_dotenv(".env")
     window = ChefSuggestWindow()
     window.start()
 
