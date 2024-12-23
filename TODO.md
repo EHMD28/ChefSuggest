@@ -1,5 +1,6 @@
 - [X] Add button to email list
 - [X] Add .env file
 - [X] Use EmailMessage object
-- [ ] Add recipe linking functionality
 - [X] Migrate from Tkinter to PyQT
+- [ ] Add edit items option
+- [ ] Add recipe linking functionality (might remove)
