@@ -1,5 +1,6 @@
 import os
 import smtplib
+import socket
 import ssl
 import json
 import random
@@ -15,6 +16,9 @@ from PyQt5.QtWidgets import (
     QLabel,
     QHBoxLayout,
     QPushButton,
+    QInputDialog,
+    QMessageBox,
+    QLineEdit,
 )
 from PyQt5.QtGui import QFont
 
@@ -49,7 +53,7 @@ class ChefSuggestWindow(QMainWindow):
 
         super().__init__()
         self.setWindowTitle("Chef Suggest")
-        self.setGeometry(0, 0, 400, 500)
+        self.setGeometry(0, 0, 800, 250)
         self.init_ui()
         self.show()
 
@@ -93,24 +97,54 @@ class ChefSuggestWindow(QMainWindow):
             self.suggestions[index].setText(f"{index+1}. {suggestion}")
 
     def email_list(self) -> None:
-        from_email = os.environ.get("CHEF_SUGGEST_EMAIL")
-        password = os.environ.get("CHEF_SUGGEST_EMAIL_PASSWORD")
-        to_email = os.environ.get("LIST_RECEIVER")
-        msg = EmailMessage()
-        today = date.today().strftime("%B %d, %Y")
-        msg["Subject"] = f"Dinner Suggestions From {today}"
-        msg["From"] = from_email
-        msg["To"] = to_email
-        suggestions = [s.text() for s in self.suggestions]
-        msg_content: str = ""
-        for suggestion in suggestions:
-            msg_content += f"{suggestion}\n"
-        msg.set_content(msg_content)
+        with open("src/config.json", "r+") as f:
+            contents: dict[str, str] = json.load(f)
+            to_email = contents["to_email"]
 
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(from_email, password)
-            server.send_message(msg)
+            receiver_email, ok = QInputDialog().getText(
+                self,
+                "Input Email",
+                "Email Address",
+                QLineEdit.EchoMode.Normal,
+                to_email,
+            )
+
+            if ok:
+                f.truncate(0)
+                f.seek(0)
+                contents["to_email"] = receiver_email
+                json.dump(contents, f, indent=2)
+
+        if ok and receiver_email:
+            try:
+                from_email = os.environ.get("CHEF_SUGGEST_EMAIL")
+                password = os.environ.get("CHEF_SUGGEST_EMAIL_PASSWORD")
+                # to_email = os.environ.get("LIST_RECEIVER")
+                msg = EmailMessage()
+                today = date.today().strftime("%B %d, %Y")
+                msg["Subject"] = f"Dinner Suggestions From {today}"
+                msg["From"] = from_email
+                msg["To"] = to_email
+                suggestions = [s.text() for s in self.suggestions]
+                msg_content: str = ""
+                for suggestion in suggestions:
+                    msg_content += f"{suggestion}\n"
+                msg.set_content(msg_content)
+
+                context = ssl.create_default_context()
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                    server.login(from_email, password)
+                    server.send_message(msg)
+            except socket.gaierror:
+                error_message = QMessageBox(self)
+                error_message.setIcon(QMessageBox.Icon.Critical)
+                error_message.setText("An Error Occured!")
+                error_message.setInformativeText("Couldn't connect to mail server")
+            except smtplib.SMTPException as e:
+                error_message = QMessageBox(self)
+                error_message.setIcon(QMessageBox.Icon.Critical)
+                error_message.setText("An Error Occured!")
+                error_message.setInformativeText(f"Error: {e}")
 
     def edit_items(self) -> None: ...
 
