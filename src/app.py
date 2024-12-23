@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QLineEdit,
 )
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon
 
 
 def load_meals() -> list[str]:
@@ -54,6 +54,7 @@ class ChefSuggestWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Chef Suggest")
         self.setGeometry(0, 0, 800, 250)
+        self.setWindowIcon(QIcon("src/ChefSuggestLogo.png"))
         self.init_ui()
         self.show()
 
