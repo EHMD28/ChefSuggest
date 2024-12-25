@@ -80,8 +80,11 @@ class ChefSuggestWindow(QMainWindow):
         buttons_container.setGeometry(0, 0, central_widget.width(), 100)
 
         new_suggestions_button = QPushButton("Generate New Suggestions")
+        new_suggestions_button.setFont(self.WINDOW_FONT)
         new_suggestions_button.clicked.connect(self.new_suggestions)
+
         email_me_button = QPushButton("Email Me Suggestions")
+        email_me_button.setFont(self.WINDOW_FONT)
         email_me_button.clicked.connect(self.email_list)
 
         buttons_layout.addWidget(new_suggestions_button)
@@ -117,7 +120,6 @@ class ChefSuggestWindow(QMainWindow):
             try:
                 from_email = os.environ.get("CHEF_SUGGEST_EMAIL")
                 password = os.environ.get("CHEF_SUGGEST_EMAIL_PASSWORD")
-                # to_email = os.environ.get("LIST_RECEIVER")
                 msg = EmailMessage()
                 today = date.today().strftime("%B %d, %Y")
                 msg["Subject"] = f"Dinner Suggestions From {today}"
@@ -138,11 +140,13 @@ class ChefSuggestWindow(QMainWindow):
                 error_message.setIcon(QMessageBox.Icon.Critical)
                 error_message.setText("An Error Occured!")
                 error_message.setInformativeText("Couldn't connect to mail server")
+                error_message.show()
             except smtplib.SMTPException as e:
                 error_message = QMessageBox(self)
                 error_message.setIcon(QMessageBox.Icon.Critical)
                 error_message.setText("An Error Occured!")
                 error_message.setInformativeText(f"Error: {e}")
+                error_message.show()
 
     def edit_items(self) -> None: ...
 
