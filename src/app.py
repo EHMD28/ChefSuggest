@@ -45,7 +45,7 @@ def get_suggestions(meals: list[str], n: int) -> list[str]:
 class ChefSuggestWindow(QMainWindow):
     WINDOW_BG = "#E5A5ff"
     WINDOW_FONT = QFont("Arial", 14)
-    NUM_SUGGESTIONS = 5
+    NUM_SUGGESTIONS = 7
 
     def __init__(self):
         with open("src/meals.json") as f:
@@ -83,12 +83,9 @@ class ChefSuggestWindow(QMainWindow):
         new_suggestions_button.clicked.connect(self.new_suggestions)
         email_me_button = QPushButton("Email Me Suggestions")
         email_me_button.clicked.connect(self.email_list)
-        edit_items_button = QPushButton("Edit Items")
-        edit_items_button.clicked.connect(self.edit_items)
 
         buttons_layout.addWidget(new_suggestions_button)
         buttons_layout.addWidget(email_me_button)
-        buttons_layout.addWidget(edit_items_button)
 
         labels_layout.addWidget(buttons_container)
 
