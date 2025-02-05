@@ -1,1 +1,1 @@
-# Chef Suggest App
+# Chef Suggest Android App

@@ -3,13 +3,12 @@
  */
 package chefsuggest
 
+import chefsuggest.ui.ChefSuggestWindow
+import javax.swing.JFrame
+
 class App {
-    val greeting: String
-        get() {
-            return "Hello World!"
-        }
 }
 
 fun main() {
-    println(App().greeting)
+    val window = ChefSuggestWindow()
 }
