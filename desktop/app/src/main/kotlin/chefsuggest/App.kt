@@ -10,5 +10,6 @@ class App {
 }
 
 fun main() {
-    val window = ChefSuggestWindow()
+    val window = ChefSuggestWindow.getInstance();
+    window.isVisible = true;
 }
