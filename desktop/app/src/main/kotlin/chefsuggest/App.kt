@@ -3,13 +3,17 @@
  */
 package chefsuggest
 
-import chefsuggest.ui.ChefSuggestWindow
-import javax.swing.JFrame
+import chefsuggest.core.XmlMealHandler
+import javax.xml.parsers.SAXParserFactory
 
 class App {
 }
 
 fun main() {
-    val window = ChefSuggestWindow.getInstance();
-    window.isVisible = true;
+    val saxParser = SAXParserFactory.newInstance().newSAXParser()
+    val mealHandler = XmlMealHandler()
+    saxParser.parse("ChefSuggestData/MacNCheese.xml", mealHandler)
+    println(mealHandler.getMeal())
+//    val window = ChefSuggestWindow.getInstance();
+//    window.isVisible = true;
 }
