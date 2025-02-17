@@ -20,4 +20,19 @@ data class Recipe(
         stringBuilder.appendLine()
         return stringBuilder.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Recipe) return false;
+        return if (this.url != other.url) false
+        else if (this.ingredients != other.ingredients) false
+        else if (this.steps != other.steps) false
+        else true
+    }
+
+    override fun hashCode(): Int {
+        var result = url?.hashCode() ?: 0
+        result = 31 * result + (ingredients?.hashCode() ?: 0)
+        result = 31 * result + (steps?.hashCode() ?: 0)
+        return result
+    }
 }

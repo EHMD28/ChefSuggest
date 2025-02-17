@@ -13,4 +13,20 @@ data class Meal(var name: String? = null, var tags: MutableList<String>? = null,
         stringBuilder.appendLine(recipe)
         return stringBuilder.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Meal) return false
+        var status = false
+        return if (this.name != other.name) false
+                else if (this.tags != other.tags) false
+                else if (this.recipe != other.recipe) false
+                else true
+    }
+
+    override fun hashCode(): Int {
+        var result = name?.hashCode() ?: 0
+        result = 31 * result + (tags?.hashCode() ?: 0)
+        result = 31 * result + (recipe?.hashCode() ?: 0)
+        return result
+    }
 }
