@@ -1,0 +1,21 @@
+{
+  "name": "Macaroni and Cheese",
+  "tags": [
+    "Meal",
+    "Side",
+    "Dairy"
+  ],
+  "url": "https://recipe.com",
+  "ingredients": [
+    "Macaroni Noodles",
+    "Cheese",
+    "Milk"
+  ],
+  "prep-time":  60,
+  "steps": [
+    "Step One",
+    "Step Two",
+    "Step Three"
+  ],
+  "last-used": "2025-03-01"
+}

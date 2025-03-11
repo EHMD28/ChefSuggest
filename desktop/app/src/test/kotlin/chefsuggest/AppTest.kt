@@ -4,26 +4,65 @@
 package chefsuggest
 
 import chefsuggest.core.Meal
-import chefsuggest.core.Recipe
-import chefsuggest.core.XmlMealHandler
-import javax.xml.parsers.SAXParserFactory
+import chefsuggest.core.MealList
+import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class AppTest {
+    companion object TestMeals {
+        val macNCheese = Meal(
+            name = "Macaroni and Cheese",
+            tags = listOf("Meal", "Side", "Dairy"),
+            url = "https://recipe.com",
+            ingredients = listOf("Macaroni Noodles", "Cheese", "Milk"),
+            prepTime = 60,
+            steps = listOf("Step One", "Step Two", "Step Three"),
+            lastUsed = "2025-03-01"
+        )
+        val chocolateCake = Meal(
+            name = "Chocolate Cake",
+            tags = listOf("Desert", "Chocolate"),
+            url = "https://chocolate-cake.com",
+            ingredients = listOf("Eggs", "Chocolate", "Milk"),
+            prepTime = 30,
+            steps = listOf("Step One", "Step Two", "Step Three"),
+            lastUsed = "2025-02-10"
+        )
+        val chickenNoodleSoup = Meal(
+            name = "Chicken Noodle Soup",
+            tags = listOf("Soup", "Chicken", "Quick"),
+            url = "https://chicken-soup.com",
+            ingredients = listOf("Noodles", "Chicken", "Soup"),
+            prepTime = 20,
+            steps = listOf("Step One", "Step Two", "Step Three"),
+            lastUsed = "2025-05-01"
+        )
+
+    }
+
     @Test
     fun loadingMeals() {
-        val saxParser = SAXParserFactory.newInstance().newSAXParser()
-        val mealHandler = XmlMealHandler()
-        saxParser.parse("src/test/kotlin/chefsuggest/resources/TestOne.xml", mealHandler)
-        val temp = Meal(
-            name = "Macaroni and Cheese",
-            tags = mutableListOf("Meal", "Side", "Dairy"),
-            Recipe(
-                url = "https://recipe.com",
-                ingredients = mutableListOf("Macaroni Noodles", "Cheese", "Milk"),
-                steps = mutableListOf("Step One", "Step Two", "Step Three")
-            )
-        )
-        assert(mealHandler.getMeal() == temp)
+        val testDir = "src/test/kotlin/chefsuggest/resources/TestOne"
+        val loadedMeals = MealList.fromMealDir(testDir)
+        val testMeals = MealList.fromMeals(listOf(macNCheese, chocolateCake, chickenNoodleSoup))
+        assertEquals(loadedMeals, testMeals)
+    }
+
+    @Test
+    fun writeMeals() {
+        val testMeals = MealList.fromMeals(listOf(macNCheese, chocolateCake, chickenNoodleSoup))
+        val directoryPath = "src/test/kotlin/chefsuggest/resources/TestTwo"
+        for ((i, meal) in testMeals.getMeals().withIndex()) {
+            val fileName = "$i.json"
+            val filePath = "$directoryPath/$fileName"
+            val file = File(filePath)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            file.writeText(meal.toString())
+        }
+        val loadedMeals = MealList.fromMealDir(directoryPath)
+        assertEquals(testMeals, loadedMeals)
     }
 }

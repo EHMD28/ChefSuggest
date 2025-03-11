@@ -9,6 +9,8 @@ plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
 
+    kotlin("plugin.serialization") version "2.1.0"
+
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
@@ -26,6 +28,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:32.1.1-jre")

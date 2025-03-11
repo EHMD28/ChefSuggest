@@ -34,3 +34,6 @@ build
 
 # Idea
 .idea/
+
+# Tests
+app/src/test/kotlin/chefsuggest/resources/TestTwo
