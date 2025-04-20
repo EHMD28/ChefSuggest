@@ -3,22 +3,14 @@
  */
 package chefsuggest
 
+import chefsuggest.ui.ChefSuggestWindow
+import javax.swing.SwingUtilities
+
 class App {
 }
 
 fun main() {
-//    val saxParser = SAXParserFactory.newInstance().newSAXParser()
-//    val mealHandler = XmlMealHandler()
-//    saxParser.parse("app/src/test/kotlin/chefsuggest/resources/TestOne.xml", mealHandler)
-//    val temp = Meal(
-//        name = "Macaroni and Cheese",
-//        tags = mutableListOf("Meal", "Side", "Dairy"),
-//        Recipe(
-//            url = "https://recipe.com",
-//            ingredients = mutableListOf("Macaroni Noodles", "Cheese", "Milk"),
-//            steps = mutableListOf("Step One", "Step Two", "Step Three")
-//        )
-//    )
-//    val areEqual = mealHandler.getMeal() == temp
-//    println("Meal Equal: $areEqual")
+    SwingUtilities.invokeLater {
+        ChefSuggestWindow.getInstance()
+    }
 }
