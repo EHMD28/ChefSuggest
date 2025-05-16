@@ -1,4 +1,4 @@
-package chefsuggest.ui
+package chefsuggest.ui.core
 
 import chefsuggest.ui.editor.EditorPanel
 import chefsuggest.ui.generator.GeneratorPanel

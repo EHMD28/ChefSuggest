@@ -6,12 +6,12 @@ import java.io.File
 class MealList private constructor() {
     private val meals = mutableListOf<Meal>()
     private val mealNames = mutableListOf<String>()
-    private val mealTags = mutableListOf<List<String>>()
-    private val mealUrls = mutableListOf<String>()
-    private val mealIngredients = mutableListOf<List<String>>()
-    private val mealPrepTimes = mutableListOf<Int>()
-    private val mealSteps = mutableListOf<List<String>>()
-    private val mealLastUsedTimes = mutableListOf<String>()
+//    private val mealTags = mutableListOf<List<String>>()
+//    private val mealUrls = mutableListOf<String>()
+//    private val mealIngredients = mutableListOf<List<String>>()
+//    private val mealPrepTimes = mutableListOf<Int>()
+//    private val mealSteps = mutableListOf<List<String>>()
+//    private val mealLastUsedTimes = mutableListOf<String>()
 
     companion object {
         /**
@@ -56,13 +56,13 @@ class MealList private constructor() {
         require(meal.name !in mealNames) { "Meal with that name already exists." }
         this.meals.add(meal)
         this.meals.sortBy { it.name }
-        this.mealNames.add(meal.name)
-        this.mealTags.add(meal.tags)
-        this.mealUrls.add(meal.url)
-        this.mealIngredients.add(meal.ingredients)
-        this.mealPrepTimes.add(meal.prepTime)
-        this.mealSteps.add(meal.steps)
-        this.mealLastUsedTimes.add(meal.lastUsed)
+//        this.mealNames.add(meal.name)
+//        this.mealTags.add(meal.tags)
+//        this.mealUrls.add(meal.url)
+//        this.mealIngredients.add(meal.ingredients)
+//        this.mealPrepTimes.add(meal.prepTime)
+//        this.mealSteps.add(meal.steps)
+//        this.mealLastUsedTimes.add(meal.lastUsed)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -78,16 +78,16 @@ class MealList private constructor() {
         return meals.hashCode()
     }
 
-    override fun toString(): String {
-        val stringBuilder = StringBuilder()
-        stringBuilder.append("\nMeal\n")
-        stringBuilder.append("\tNames: ${this.mealNames}\n")
-        stringBuilder.append("\tTags: ${this.mealTags}\n")
-        stringBuilder.append("\tUrls: ${this.mealUrls}\n")
-        stringBuilder.append("\tIngredients: ${this.mealIngredients}\n")
-        stringBuilder.append("\tPrep Times: ${this.mealPrepTimes}\n")
-        stringBuilder.append("\tSteps: ${this.mealSteps}\n")
-        stringBuilder.append("\tLast Used: ${this.mealLastUsedTimes}\n")
-        return stringBuilder.toString()
-    }
+//    override fun toString(): String {
+////        val stringBuilder = StringBuilder()
+////        stringBuilder.append("\nMeal\n")
+////        stringBuilder.append("\tNames: ${this.mealNames}\n")
+////        stringBuilder.append("\tTags: ${this.mealTags}\n")
+////        stringBuilder.append("\tUrls: ${this.mealUrls}\n")
+////        stringBuilder.append("\tIngredients: ${this.mealIngredients}\n")
+////        stringBuilder.append("\tPrep Times: ${this.mealPrepTimes}\n")
+////        stringBuilder.append("\tSteps: ${this.mealSteps}\n")
+////        stringBuilder.append("\tLast Used: ${this.mealLastUsedTimes}\n")
+////        return stringBuilder.toString()
+//    }
 }

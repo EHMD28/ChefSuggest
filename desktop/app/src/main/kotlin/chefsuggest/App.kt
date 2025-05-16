@@ -3,7 +3,7 @@
  */
 package chefsuggest
 
-import chefsuggest.ui.ChefSuggestWindow
+import chefsuggest.ui.core.ChefSuggestWindow
 import javax.swing.SwingUtilities
 
 class App {

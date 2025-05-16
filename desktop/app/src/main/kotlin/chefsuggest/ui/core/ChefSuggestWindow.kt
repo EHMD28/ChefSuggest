@@ -1,4 +1,4 @@
-package chefsuggest.ui
+package chefsuggest.ui.core
 
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
@@ -13,7 +13,7 @@ class ChefSuggestWindow {
             instance.title = "Chef Suggest"
 //            instance.size = Dimension(500, 500)
             instance.layout = BorderLayout()
-            this.initUi()
+            initUi()
             instance.isVisible = true
         }
 
