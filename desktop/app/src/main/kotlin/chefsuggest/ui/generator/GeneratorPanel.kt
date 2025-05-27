@@ -14,10 +14,8 @@ class GeneratorPanel : JPanel() {
 
     init {
         this.layout = BorderLayout()
-        this.preferredSize = Dimension(800, 500)
+        this.preferredSize = Dimension(1500, 500)
         this.background = Color.WHITE
-//        val scrollPane =
-//            JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         this.add(controlsPanel, BorderLayout.NORTH)
         this.add(listOfMealsPanel, BorderLayout.CENTER)
     }
@@ -35,7 +33,8 @@ class GeneratorPanel : JPanel() {
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
         panel.background = Color.RED
         val scrollPane =
-            JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+            JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        scrollPane.verticalScrollBar.unitIncrement = 16
         return scrollPane
     }
 }

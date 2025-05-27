@@ -2,21 +2,19 @@ package chefsuggest.core
 
 import java.time.LocalDate
 
-class Filter(
-    private val tags: MutableList<String> = mutableListOf(),
-    private val ingredients: MutableList<String> = mutableListOf(),
-    private var prepTime: NumRange? = null,
-    private var lastUsed: UInt = 0u,
+data class Filter(
+    var tags: List<String> = listOf(),
+    var ingredients: List<String> = listOf(),
+    var prepTime: NumRange? = null,
+    var lastUsed: UInt = 0u,
 ) {
-    // Adds tag to filter.
-    fun addTag(tag: String) {
-        this.tags.add(tag)
-    }
+//    fun setTags(tags: List<String>) {
+//        this.tags = tags.toMutableList()
+//    }
 
-    // Adds ingredient to filter
-    fun addIngredient(ingredient: String) {
-        this.ingredients.add(ingredient)
-    }
+//    fun setIngredients(ingredients: List<String>) {
+//        this.ingredients = ingredients
+//    }
 
     // Sets preparation time filter
     fun setPrepTimeRange(start: UInt, end: UInt) {

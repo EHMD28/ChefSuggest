@@ -1,32 +1,45 @@
 package chefsuggest.ui.generator
 
+import chefsuggest.core.Filter
 import chefsuggest.utils.Palette
+import org.checkerframework.common.returnsreceiver.qual.This
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.awt.event.ItemEvent
 import javax.swing.*
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
 data class MealSelectorPanel(val index: Int) : JPanel() {
+    // GUI Components
     private val label = label()
-    private val tagsFilter = tagsFilter()
+    private val lockButton = lockButton()
+    private val tagsFilterButton = tagsFilterButton()
+    private val selectedTagsTextArea = selectedTagsText()
+    private val tagsFilterContainer = tagsFilterContainer()
     private val ingredientsFilter = ingredientsFilter()
     private val prepTimeFilter = prepTimeFilter()
     private val lastUsedFilter = lastUsedFilter()
     private val filtersContainer = filtersContainer()
+    // Functionality Components
+    private var isLocked = false
+    // TODO: add filter functionality.
+    private val filter = Filter()
 
     init {
-        // TODO: Add scrolling.
         this.layout = BorderLayout()
         this.background = Color.WHITE
         val border = BorderFactory.createLineBorder(Color.BLACK)
         val padding = EmptyBorder(10, 10, 10, 10)
         this.border = CompoundBorder(border, padding)
         this.add(label, BorderLayout.LINE_START)
+        this.add(lockButton, BorderLayout.CENTER)
         this.add(filtersContainer, BorderLayout.LINE_END)
-        this.preferredSize = Dimension(100, 75)
+        // TODO: Add appropriate minimum and maximum size.
+        // ! I HATE BOX_LAYOUT!!!!!!!1!1!!!!1
+        this.minimumSize = Dimension(100, 75)
     }
 
     private fun label() : JPanel {
@@ -38,13 +51,64 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
         return panel
     }
 
-    private fun tagsFilter() : JPanel {
+    private fun lockButton() : JPanel {
+        val panel = JPanel()
+        val button = JToggleButton()
+        button.isFocusPainted = false
+        button.preferredSize = Dimension(150, 40)
+        button.text = "Unlocked"
+        button.addItemListener { event ->
+            if (event.stateChange == ItemEvent.SELECTED) {
+                button.text = "Locked"
+                this.isLocked = true
+            } else if (event.stateChange == ItemEvent.DESELECTED) {
+                button.text = "Unlocked"
+                this.isLocked = false
+            }
+        }
+        panel.add(button)
+        return panel
+    }
+
+    private fun tagsFilterButton() : JButton {
+        val button = JButton("Edit Tags")
+        button.isFocusPainted = false
+        // <TEMP>
+        val tempTags = listOf("Tag 1", "Tag 2", "Tag 3", "Tag 4")
+        // </TEMP>
+        button.addActionListener { _ ->
+            val parent = SwingUtilities.getWindowAncestor(this) as JFrame
+            val selectedTags = DialogUtilities.selectTags(parent, tempTags)
+            if (selectedTags != null) {
+                this.filter.tags = selectedTags
+                this.selectedTagsTextArea.text = "Selected Tags: ${filter.tags}"
+                this.maximumSize = Dimension(this.parent.width, this.preferredSize.height)
+                this.revalidate()
+                this.parent.revalidate()
+                this.parent.repaint()
+//                println("DEBUG: PREFERRED SIZE - (${this.preferredSize.width}, ${this.preferredSize.height})")
+//                println("DEBUG: ACTUAL SIZE - (${this.width}, ${this.height})")
+                println("DEBUG: SELECTED TAGS - $selectedTags")
+            }
+        }
+        return button
+    }
+
+    private fun selectedTagsText() : JTextArea {
+        val textArea = JTextArea("Selected Tags:")
+        textArea.wrapStyleWord = true;
+        textArea.lineWrap = true;
+        textArea.isOpaque = false;
+        textArea.isEditable = false;
+        textArea.isFocusable = false;
+        return textArea
+    }
+
+    private fun tagsFilterContainer() : JPanel {
         val panel = JPanel()
         panel.layout = BorderLayout()
-        val button = JButton("Edit Tags")
-        val label = JLabel("Selected Tags: ")
-        panel.add(button, BorderLayout.PAGE_START)
-        panel.add(label, BorderLayout.PAGE_END)
+        panel.add(this.tagsFilterButton, BorderLayout.PAGE_START)
+        panel.add(this.selectedTagsTextArea, BorderLayout.PAGE_END)
         return panel
     }
 
@@ -52,6 +116,18 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
         val panel = JPanel()
         panel.layout = BorderLayout()
         val button = JButton("Edit Ingredients")
+        /// <TEMP>
+        val tempIngredients = listOf("Ingredient 1", "Ingredient 2", "Ingredient 3", "Ingredient 4")
+        /// </TEMP>
+        button.addActionListener { _ ->
+            val parent = SwingUtilities.getWindowAncestor(this) as JFrame
+            val selectedIngredients = DialogUtilities.selectIngredients(parent, tempIngredients)
+            if (selectedIngredients != null) {
+                this.filter.ingredients = selectedIngredients
+                println("DEBUG: SELECTED INGREDIENTS - $selectedIngredients")
+            }
+        }
+        button.isFocusPainted = false
         val label = JLabel("Selected Ingredients: ")
         panel.add(button, BorderLayout.PAGE_START)
         panel.add(label, BorderLayout.PAGE_END)
@@ -102,9 +178,8 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun filtersContainer() : JPanel {
         val panel = JPanel()
-//        panel.layout = BoxLayout(panel, BoxLayout.X_AXIS)
         panel.layout = FlowLayout(FlowLayout.LEADING, 20, 10)
-        panel.add(tagsFilter)
+        panel.add(tagsFilterContainer)
         panel.add(ingredientsFilter)
         panel.add(prepTimeFilter)
         panel.add(lastUsedFilter)
