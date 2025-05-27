@@ -14,28 +14,22 @@ class AppTest {
         val macNCheese = Meal(
             name = "Macaroni and Cheese",
             tags = listOf("Meal", "Side", "Dairy"),
-            url = "https://recipe.com",
             ingredients = listOf("Macaroni Noodles", "Cheese", "Milk"),
             prepTime = 60,
-            steps = listOf("Step One", "Step Two", "Step Three"),
             lastUsed = "2025-03-01"
         )
         val chocolateCake = Meal(
             name = "Chocolate Cake",
             tags = listOf("Desert", "Chocolate"),
-            url = "https://chocolate-cake.com",
             ingredients = listOf("Eggs", "Chocolate", "Milk"),
             prepTime = 30,
-            steps = listOf("Step One", "Step Two", "Step Three"),
             lastUsed = "2025-02-10"
         )
         val chickenNoodleSoup = Meal(
             name = "Chicken Noodle Soup",
             tags = listOf("Soup", "Chicken", "Quick"),
-            url = "https://chicken-soup.com",
             ingredients = listOf("Noodles", "Chicken", "Soup"),
             prepTime = 20,
-            steps = listOf("Step One", "Step Two", "Step Three"),
             lastUsed = "2025-05-01"
         )
 

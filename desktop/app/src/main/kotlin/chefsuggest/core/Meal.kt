@@ -8,10 +8,8 @@ import kotlinx.serialization.json.Json
 data class Meal(
     @SerialName("name") val name: String,
     @SerialName("tags") val tags: List<String>,
-    @SerialName("url") val url: String,
     @SerialName("ingredients") val ingredients: List<String>,
     @SerialName("prep-time") val prepTime: Int,
-    @SerialName("steps") val steps: List<String>,
     @SerialName("last-used") val lastUsed: String
 ) {
     override fun toString(): String {

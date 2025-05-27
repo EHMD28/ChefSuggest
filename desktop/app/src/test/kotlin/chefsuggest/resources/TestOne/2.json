@@ -5,17 +5,11 @@
     "Chicken",
     "Quick"
   ],
-  "url": "https://chicken-soup.com",
   "ingredients": [
     "Noodles",
     "Chicken",
     "Soup"
   ],
   "prep-time":  20,
-  "steps": [
-    "Step One",
-    "Step Two",
-    "Step Three"
-  ],
   "last-used": "2025-05-01"
 }

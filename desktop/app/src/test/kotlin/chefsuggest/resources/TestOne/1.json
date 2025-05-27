@@ -4,17 +4,11 @@
     "Desert",
     "Chocolate"
   ],
-  "url": "https://chocolate-cake.com",
   "ingredients": [
     "Eggs",
     "Chocolate",
     "Milk"
   ],
   "prep-time":  30,
-  "steps": [
-    "Step One",
-    "Step Two",
-    "Step Three"
-  ],
   "last-used": "2025-02-10"
 }
