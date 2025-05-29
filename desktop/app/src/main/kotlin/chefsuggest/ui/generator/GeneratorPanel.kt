@@ -22,7 +22,7 @@ class GeneratorPanel : JPanel() {
 
     private fun newControlsPanel(): JPanel {
         val panel = JPanel(BorderLayout())
-        panel.background = Color.ORANGE
+//        panel.background = Color.ORANGE
         panel.add(NumMealsSpinner(listOfMealsPanel.viewport.view as JPanel), BorderLayout.WEST)
         panel.add(GenerateMealsButton(), BorderLayout.EAST)
         return panel
@@ -31,7 +31,7 @@ class GeneratorPanel : JPanel() {
     private fun newListOfMealsPanel(): JScrollPane {
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-        panel.background = Color.RED
+//        panel.background = Color.RED
         val scrollPane =
             JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         scrollPane.verticalScrollBar.unitIncrement = 16

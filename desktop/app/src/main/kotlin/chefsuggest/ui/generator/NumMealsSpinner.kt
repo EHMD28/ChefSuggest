@@ -38,7 +38,7 @@ class NumMealsSpinner(private val mealListPanel: JPanel) : JPanel() {
         val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
         spinnerEditor.textField.preferredSize = Dimension(50, 20)
         spinnerEditor.size = Dimension(50, 20)
-        this.background = Color.PINK
+//        this.background = Color.PINK
         this.layout = FlowLayout()
         this.preferredSize = Dimension(280, 50)
         this.add(label)

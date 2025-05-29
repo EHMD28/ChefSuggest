@@ -2,9 +2,9 @@ package chefsuggest.ui.generator
 
 import chefsuggest.core.Filter
 import chefsuggest.utils.Palette
-import org.checkerframework.common.returnsreceiver.qual.This
 import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.ItemEvent
@@ -17,9 +17,11 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
     private val label = label()
     private val lockButton = lockButton()
     private val tagsFilterButton = tagsFilterButton()
-    private val selectedTagsTextArea = selectedTagsText()
+    private val selectedTagsTextArea = selectedTagsTextArea()
     private val tagsFilterContainer = tagsFilterContainer()
-    private val ingredientsFilter = ingredientsFilter()
+//    private val ingredientsFilterButton = ingredientsFilterButton()
+//    private val selectedIngredientsTextArea = ingredientsFilterTextArea()
+//    private val ingredientsFilter = ingredientsFilterContainer()
     private val prepTimeFilter = prepTimeFilter()
     private val lastUsedFilter = lastUsedFilter()
     private val filtersContainer = filtersContainer()
@@ -44,6 +46,7 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun label() : JPanel {
         val panel = JPanel()
+        panel.isOpaque = false
         panel.layout = BorderLayout()
         val label = JLabel("${this.index + 1}. Meal Name")
         label.font = Palette.getPrimaryFontWithSize(16)
@@ -53,6 +56,8 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun lockButton() : JPanel {
         val panel = JPanel()
+        panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+        panel.isOpaque = false
         val button = JToggleButton()
         button.isFocusPainted = false
         button.preferredSize = Dimension(150, 40)
@@ -66,7 +71,10 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
                 this.isLocked = false
             }
         }
+        button.alignmentX = Component.CENTER_ALIGNMENT
+        panel.add(Box.createVerticalGlue())
         panel.add(button)
+        panel.add(Box.createVerticalGlue())
         return panel
     }
 
@@ -94,7 +102,7 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
         return button
     }
 
-    private fun selectedTagsText() : JTextArea {
+    private fun selectedTagsTextArea() : JTextArea {
         val textArea = JTextArea("Selected Tags:")
         textArea.wrapStyleWord = true;
         textArea.lineWrap = true;
@@ -106,36 +114,60 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun tagsFilterContainer() : JPanel {
         val panel = JPanel()
+        panel.isOpaque = false
         panel.layout = BorderLayout()
         panel.add(this.tagsFilterButton, BorderLayout.PAGE_START)
         panel.add(this.selectedTagsTextArea, BorderLayout.PAGE_END)
         return panel
     }
 
-    private fun ingredientsFilter() : JPanel {
-        val panel = JPanel()
-        panel.layout = BorderLayout()
-        val button = JButton("Edit Ingredients")
-        /// <TEMP>
-        val tempIngredients = listOf("Ingredient 1", "Ingredient 2", "Ingredient 3", "Ingredient 4")
-        /// </TEMP>
-        button.addActionListener { _ ->
-            val parent = SwingUtilities.getWindowAncestor(this) as JFrame
-            val selectedIngredients = DialogUtilities.selectIngredients(parent, tempIngredients)
-            if (selectedIngredients != null) {
-                this.filter.ingredients = selectedIngredients
-                println("DEBUG: SELECTED INGREDIENTS - $selectedIngredients")
-            }
-        }
-        button.isFocusPainted = false
-        val label = JLabel("Selected Ingredients: ")
-        panel.add(button, BorderLayout.PAGE_START)
-        panel.add(label, BorderLayout.PAGE_END)
-        return panel
-    }
+//    private fun ingredientsFilterButton() : JButton {
+//        val button = JButton("Edit Ingredients")
+//        /// <TEMP>
+//        val tempIngredients = listOf("Ingredient 1", "Ingredient 2", "Ingredient 3", "Ingredient 4")
+//        /// </TEMP>
+//        button.addActionListener { _ ->
+//            val parent = SwingUtilities.getWindowAncestor(this) as JFrame
+//            val selectedIngredients = DialogUtilities.selectIngredients(parent, tempIngredients)
+//            if (selectedIngredients != null) {
+//                this.filter.ingredients = selectedIngredients
+//                this.selectedIngredientsTextArea.text = "Selected Ingredients: ${filter.ingredients}"
+//                this.maximumSize = Dimension(this.parent.width, this.preferredSize.height)
+//                this.revalidate()
+//                this.parent.revalidate()
+//                this.parent.repaint()
+////                println("DEBUG: PREFERRED SIZE - (${this.preferredSize.width}, ${this.preferredSize.height})")
+////                println("DEBUG: ACTUAL SIZE - (${this.width}, ${this.height})")
+//                println("DEBUG: SELECTED TAGS - $selectedIngredients")
+//            }
+//        }
+//        button.isFocusPainted = false
+//        return button
+//    }
+//
+//    private fun ingredientsFilterTextArea() : JTextArea {
+//        val textArea = JTextArea("Selected Ingredients:")
+//        textArea.wrapStyleWord = true;
+//        textArea.lineWrap = true;
+//        textArea.isOpaque = false;
+//        textArea.isEditable = false;
+//        textArea.isFocusable = false;
+//        return textArea
+//    }
+//
+//    private fun ingredientsFilterContainer() : JPanel {
+//        val panel = JPanel()
+//        panel.isOpaque = false
+//        panel.layout = BorderLayout()
+//        val label = JLabel("Selected Ingredients: ")
+//        panel.add(this.ingredientsFilterButton, BorderLayout.PAGE_START)
+//        panel.add(this.selectedIngredientsTextArea, BorderLayout.PAGE_END)
+//        return panel
+//    }
 
     private fun prepTimeFilter() : JPanel {
         val panel = JPanel()
+        panel.isOpaque = false
         panel.layout = BorderLayout()
         val label = JLabel("Prep Time Filter:")
         val options = arrayOf(
@@ -152,6 +184,7 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun lastUsedFilter() : JPanel {
         val panel = JPanel()
+        panel.isOpaque = false
         panel.layout = BorderLayout()
         val label = JLabel("Days Since Last Used: ")
         val spinner = lastUsedFilterSpinner()
@@ -178,9 +211,10 @@ data class MealSelectorPanel(val index: Int) : JPanel() {
 
     private fun filtersContainer() : JPanel {
         val panel = JPanel()
+        panel.isOpaque = false
         panel.layout = FlowLayout(FlowLayout.LEADING, 20, 10)
         panel.add(tagsFilterContainer)
-        panel.add(ingredientsFilter)
+//        panel.add(ingredientsFilter)
         panel.add(prepTimeFilter)
         panel.add(lastUsedFilter)
         return panel
