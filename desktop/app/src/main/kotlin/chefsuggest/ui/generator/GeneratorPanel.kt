@@ -24,7 +24,7 @@ class GeneratorPanel : JPanel() {
         val panel = JPanel(BorderLayout())
 //        panel.background = Color.ORANGE
         panel.add(NumMealsSpinner(listOfMealsPanel.viewport.view as JPanel), BorderLayout.WEST)
-        panel.add(GenerateMealsButton(), BorderLayout.EAST)
+        panel.add(GenerateMealsButton(listOfMealsPanel.viewport.view as JPanel), BorderLayout.EAST)
         return panel
     }
 

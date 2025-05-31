@@ -7,9 +7,9 @@ import javax.swing.*
 
 class DialogUtilities {
     companion object {
-        fun selectTags(frame: Frame, tags: List<String>): List<String>? {
-            val chosenTags: MutableList<String> = mutableListOf()
-            SelectTagsDialog(frame, tags, chosenTags)
+        fun selectTags(frame: Frame, allTags: List<String>, chosen: List<String>): List<String>? {
+            val chosenTags: MutableList<String> = chosen.toMutableList()
+            SelectTagsDialog(frame, allTags, chosenTags)
             return if (chosenTags.size == 0) {
                 null
             } else {
@@ -51,6 +51,7 @@ private class SelectTagsDialog(frame: Frame, private val tags: List<String>, pri
         for (tag in this.tags) {
             val checkbox = JCheckBox(tag)
             checkbox.isFocusPainted = false
+            checkbox.isSelected = tag in chosen
             checkbox.addActionListener { event ->
                 val source = event.source as JCheckBox
                 if (source.isSelected) {

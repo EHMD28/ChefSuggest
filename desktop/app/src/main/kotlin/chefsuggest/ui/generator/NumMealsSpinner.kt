@@ -1,7 +1,6 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.utils.Palette
-import java.awt.Color
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.JLabel
@@ -24,7 +23,7 @@ class NumMealsSpinner(private val mealListPanel: JPanel) : JPanel() {
             val value = spinner.value as Int;
             val numMealSelectors = mealListPanel.components.size
             if (value > numMealSelectors) {
-                val mealSelectorPanel = MealSelectorPanel(numMealSelectors)
+                val mealSelectorPanel = MealFilterPanel(numMealSelectors)
                 val height = mealSelectorPanel.preferredSize.height
                 val width = mealListPanel.width
                 mealSelectorPanel.maximumSize = Dimension(width, height)

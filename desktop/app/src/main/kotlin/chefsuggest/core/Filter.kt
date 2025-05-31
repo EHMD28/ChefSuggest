@@ -1,35 +1,24 @@
 package chefsuggest.core
 
-import java.time.LocalDate
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
+@Serializable
 data class Filter(
     var tags: List<String> = listOf(),
-    var ingredients: List<String> = listOf(),
-    var prepTime: NumRange? = null,
-    var lastUsed: UInt = 0u,
+    var prepTime: PrepTimeBucket = PrepTimeBucket.NONE,
+    var lastUsed: Int = 0,
+    var isLocked: Boolean = false,
 ) {
-//    fun setTags(tags: List<String>) {
-//        this.tags = tags.toMutableList()
-//    }
-
-//    fun setIngredients(ingredients: List<String>) {
-//        this.ingredients = ingredients
-//    }
-
-    // Sets preparation time filter
-    fun setPrepTimeRange(start: UInt, end: UInt) {
-        this.prepTime = NumRange(start, end)
-    }
-
-    // Sets how many days should have passed since the meal was last used.
-    fun setLastUsedRange(days: Int) {
-        TODO()
-    }
-
-    // Applies all filters to meal list, returning the result.
-    fun apply(mealList: MealList) : MealList {
-        TODO()
+    override fun toString() : String {
+        val json =  Json { encodeDefaults = true }
+        return json.encodeToString(this)
     }
 }
 
-data class NumRange(val start: UInt, val end: UInt)
+enum class PrepTimeBucket {
+    QUICK,
+    MEDIUM,
+    LONG,
+    NONE,
+}

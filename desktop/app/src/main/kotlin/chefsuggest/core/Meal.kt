@@ -12,7 +12,7 @@ data class Meal(
     @SerialName("prep-time") val prepTime: Int,
     @SerialName("last-used") val lastUsed: String
 ) {
-    override fun toString(): String {
+    override fun toString() : String {
         return Json.encodeToString(this)
     }
 }
