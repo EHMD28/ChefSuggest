@@ -5,37 +5,27 @@ import java.awt.Dimension
 import java.awt.Frame
 import javax.swing.*
 
-class DialogUtilities {
-    companion object {
-        fun selectTags(frame: Frame, allTags: List<String>, chosen: List<String>): List<String>? {
-            val chosenTags: MutableList<String> = chosen.toMutableList()
-            SelectTagsDialog(frame, allTags, chosenTags)
-            return if (chosenTags.size == 0) {
-                null
-            } else {
-                chosenTags
-            }
-        }
+data class TagsSelectionResult(val tags: List<String>?, val isCanceled: Boolean)
 
-//        fun selectIngredients(frame: Frame, ingredients: List<String>): List<String>? {
-//            val chosenIngredients: MutableList<String> = mutableListOf()
-//            SelectIngredientsDialog(frame, ingredients, chosenIngredients)
-//            return if (chosenIngredients.size == 0) {
-//                null
-//            } else {
-//                chosenIngredients
-//            }
-//        }
+object DialogUtilities {
+    fun selectTags(frame: Frame, allTags: List<String>, chosen: List<String>): TagsSelectionResult {
+        val chosenTags: MutableList<String> = chosen.toMutableList()
+        val dialog = SelectTagsDialog(frame, allTags, chosenTags)
+        return TagsSelectionResult(
+            tags = if (dialog.isCanceled) null else chosenTags,
+            isCanceled = dialog.isCanceled
+        )
     }
 }
 
 private class SelectTagsDialog(frame: Frame, private val tags: List<String>, private val chosen: MutableList<String>) :
     JDialog(frame) {
+    var isCanceled = false
     private val tagsContainer = tagsContainer()
     private val buttonsContainer = buttonsContainer()
 
     init {
-        this.defaultCloseOperation = JDialog.DISPOSE_ON_CLOSE
+        this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.modalityType = ModalityType.APPLICATION_MODAL
         this.title = "Select Tags"
         this.layout = BorderLayout()
@@ -84,7 +74,7 @@ private class SelectTagsDialog(frame: Frame, private val tags: List<String>, pri
             if (event.source == cancelButton) {
                 this.isVisible = false
                 this.dispose()
-                this.chosen.clear()
+                this.isCanceled = true
             }
         }
         panel.add(applyButton)

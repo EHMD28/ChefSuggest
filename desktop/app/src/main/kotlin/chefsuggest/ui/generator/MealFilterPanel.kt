@@ -106,10 +106,12 @@ data class MealFilterPanel(val index: Int) : JPanel() {
         // </TEMP>
         button.addActionListener { _ ->
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
-            val selectedTags = DialogUtilities.selectTags(parent, tempTags, this.filter.tags)
-            if (selectedTags != null) {
+            val result = DialogUtilities.selectTags(parent, tempTags, this.filter.tags)
+            if (!result.isCanceled && result.tags != null) {
+                val selectedTags = result.tags
                 this.filter.tags = selectedTags
-                this.selectedTagsTextArea.text = "Selected Tags: ${filter.tags}"
+                val text = if (filter.tags.isEmpty()) "None" else filter.tags.toString()
+                this.selectedTagsTextArea.text = "Selected Tags: $text"
                 this.tagsFilterContainer.preferredSize = null
                 this.maximumSize = Dimension(this.parent.width, this.preferredSize.height)
                 this.revalidate()
