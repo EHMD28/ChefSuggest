@@ -26,13 +26,13 @@ dependencies {
 
     // Use the JUnit 5 integration.
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:32.1.1-jre")
+    implementation("org.jetbrains.kotlinx:dataframe:1.0.0-Beta2")
+    implementation("org.slf4j:slf4j-simple:2.0.9") // Required by kotlinx Dataframe... for reasons.
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

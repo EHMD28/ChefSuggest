@@ -1,16 +1,16 @@
 package chefsuggest.core
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
 data class Meal(
-    @SerialName("name") val name: String,
-    @SerialName("tags") val tags: List<String>,
-    @SerialName("ingredients") val ingredients: List<String>,
-    @SerialName("prep-time") val prepTime: Int,
-    @SerialName("last-used") val lastUsed: String
+    val name: String,
+    val tags: List<String>,
+    val prepTime: Int,
+    val lastUsed: LocalDate
 ) {
     override fun toString() : String {
         return Json.encodeToString(this)
