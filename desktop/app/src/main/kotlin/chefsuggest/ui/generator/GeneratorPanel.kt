@@ -1,14 +1,17 @@
 package chefsuggest.ui.generator
 
+import chefsuggest.core.MealList
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JScrollPane
+import kotlin.io.path.Path
 
 
 class GeneratorPanel : JPanel() {
+    private val mealList = MealList.fromTsv(Path("app/src/test/kotlin/chefsuggest/resources/LoadTest/TestMeals.tsv"))
     private val listOfMealsPanel = newListOfMealsPanel()
     private val controlsPanel = newControlsPanel()
 
@@ -23,8 +26,8 @@ class GeneratorPanel : JPanel() {
     private fun newControlsPanel(): JPanel {
         val panel = JPanel(BorderLayout())
 //        panel.background = Color.ORANGE
-        panel.add(NumMealsSpinner(listOfMealsPanel.viewport.view as JPanel), BorderLayout.WEST)
-        panel.add(GenerateMealsButton(listOfMealsPanel.viewport.view as JPanel), BorderLayout.EAST)
+        panel.add(NumMealsSpinner(listOfMealsPanel.viewport.view as JPanel, mealList), BorderLayout.WEST)
+        panel.add(GenerateMealsButton(listOfMealsPanel.viewport.view as JPanel, mealList), BorderLayout.EAST)
         return panel
     }
 

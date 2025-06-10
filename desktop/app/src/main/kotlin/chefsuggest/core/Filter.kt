@@ -20,5 +20,5 @@ enum class PrepTimeBucket {
     QUICK,
     MEDIUM,
     LONG,
-    NONE,
+    NONE;
 }

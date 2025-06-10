@@ -1,6 +1,7 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.core.Filter
+import chefsuggest.core.MealList
 import chefsuggest.core.PrepTimeBucket
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
@@ -13,10 +14,11 @@ import javax.swing.*
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
-data class MealFilterPanel(val index: Int) : JPanel() {
+data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     val filter = Filter()
     // Label
     private val label = label()
+    private val labelContainer = labelContainer()
     // Lock Button
     private val lockButton = lockButton()
     private val lockButtonContainer = lockButtonContainer()
@@ -39,7 +41,7 @@ data class MealFilterPanel(val index: Int) : JPanel() {
         val border = BorderFactory.createLineBorder(Color.BLACK)
         val padding = EmptyBorder(10, 10, 10, 10)
         this.border = CompoundBorder(border, padding)
-        this.add(label, BorderLayout.LINE_START)
+        this.add(labelContainer, BorderLayout.LINE_START)
         this.add(lockButtonContainer, BorderLayout.CENTER)
         this.add(filtersContainer, BorderLayout.LINE_END)
         // TODO: Add appropriate minimum and maximum size.
@@ -47,12 +49,16 @@ data class MealFilterPanel(val index: Int) : JPanel() {
         this.minimumSize = Dimension(100, 75)
     }
 
-    private fun label() : JPanel {
+    private fun label() : JLabel {
+        val label = JLabel("${this.index + 1}. Meal Name")
+        label.font = Palette.getPrimaryFontWithSize(16)
+        return label
+    }
+
+    private fun labelContainer() : JPanel {
         val panel = JPanel()
         panel.isOpaque = false
         panel.layout = BorderLayout()
-        val label = JLabel("${this.index + 1}. Meal Name")
-        label.font = Palette.getPrimaryFontWithSize(16)
         panel.add(label, BorderLayout.CENTER)
         return panel
     }
@@ -102,11 +108,12 @@ data class MealFilterPanel(val index: Int) : JPanel() {
         val button = JButton("Edit Tags")
         button.isFocusPainted = false
         // <TEMP>
-        val tempTags = listOf("Tag 1", "Tag 2", "Tag 3", "Tag 4")
+//        val tempTags = listOf("Tag 1", "Tag 2", "Tag 3", "Tag 4")
+        val tags = mealList.tags()
         // </TEMP>
         button.addActionListener { _ ->
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
-            val result = DialogUtilities.selectTags(parent, tempTags, this.filter.tags)
+            val result = DialogUtilities.selectTags(parent, tags, this.filter.tags)
             if (!result.isCanceled && result.tags != null) {
                 val selectedTags = result.tags
                 this.filter.tags = selectedTags
@@ -212,5 +219,9 @@ data class MealFilterPanel(val index: Int) : JPanel() {
         panel.add(prepTimeFilterContainer)
         panel.add(lastUsedFilterContainer)
         return panel
+    }
+
+    fun setMealNameTo(mealName: String) {
+        this.label.text = "${index + 1}. $mealName"
     }
 }
