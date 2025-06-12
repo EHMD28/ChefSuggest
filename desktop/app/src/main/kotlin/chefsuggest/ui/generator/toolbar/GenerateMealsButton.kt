@@ -1,6 +1,7 @@
-package chefsuggest.ui.generator
+package chefsuggest.ui.generator.toolbar
 
 import chefsuggest.core.MealList
+import chefsuggest.ui.generator.MealFilterPanel
 import chefsuggest.utils.Palette
 import java.awt.Dimension
 import javax.swing.JButton
@@ -17,21 +18,20 @@ class GenerateMealsButton(mealFiltersPanel: JPanel, mealList: MealList) : JButto
         this.preferredSize = Dimension(150, 50)
         this.isFocusPainted = false
         this.addActionListener { _ ->
-            val mealFilters = mealFiltersPanel.components
-            if (mealFilters.size > mealList.size()) TODO()
-            val chosenMealsNames = mutableListOf<String>()
+            val mealFilters = mealFiltersPanel.components.map { it as MealFilterPanel }
+            val chosenNames = mealFilters.mapNotNull { if (it.filter.isLocked) it.mealName else null }.toMutableList()
             for ((index, panel) in mealFilters.withIndex()) {
-                val filterPanel = panel as MealFilterPanel
-                val filter = filterPanel.filter
+                val filter = panel.filter
                 if (!filter.isLocked) {
                     val filteredMeals = mealList.applyFilter(filter)
-                    val meal = filteredMeals.getRandomMeal(chosenMealsNames)
+                    val meal = filteredMeals.getRandomMeal(chosenNames)
                     if ((meal == null) || filteredMeals.isEmpty) {
-                        filterPanel.setMealNameTo("No Meal Found")
-                        println("No Meal found for #$index")
+                        panel.setMealNameTo("No Meal Found")
+                        println("No Meal found for #${index+1}")
                     } else {
-                        filterPanel.setMealNameTo(meal.name)
-                        println("Set meal #$index to ${meal.name}")
+                        chosenNames.add(meal.name)
+                        panel.setMealNameTo(meal.name)
+                        println("Set meal #${index+1} to ${meal.name}")
                     }
                 }
             }

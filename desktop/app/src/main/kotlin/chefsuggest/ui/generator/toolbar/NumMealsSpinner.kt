@@ -1,6 +1,7 @@
-package chefsuggest.ui.generator
+package chefsuggest.ui.generator.toolbar
 
 import chefsuggest.core.MealList
+import chefsuggest.ui.generator.MealFilterPanel
 import chefsuggest.utils.Palette
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -19,6 +20,10 @@ class NumMealsSpinner(mealListPanel: JPanel, mealList: MealList) : JPanel() {
         val step = 1
         val spinnerModel = SpinnerNumberModel(initValue, minValue, maxValue, step)
         val spinner = JSpinner(spinnerModel)
+        val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
+        spinnerEditor.textField.preferredSize = Dimension(50, 20)
+        spinnerEditor.size = Dimension(50, 20)
+        spinnerEditor.textField.isEditable = false
         spinner.addChangeListener {
             spinner.commitEdit()
             val value = spinner.value as Int;
@@ -35,10 +40,6 @@ class NumMealsSpinner(mealListPanel: JPanel, mealList: MealList) : JPanel() {
             }
             mealListPanel.revalidate()
         }
-        val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
-        spinnerEditor.textField.preferredSize = Dimension(50, 20)
-        spinnerEditor.size = Dimension(50, 20)
-//        this.background = Color.PINK
         this.layout = FlowLayout()
         this.preferredSize = Dimension(280, 50)
         this.add(label)

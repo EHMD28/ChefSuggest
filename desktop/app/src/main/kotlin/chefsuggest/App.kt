@@ -4,12 +4,11 @@
 package chefsuggest
 
 import chefsuggest.ui.core.ChefSuggestWindow
+import chefsuggest.utils.initAppConfigFiles
 import javax.swing.SwingUtilities
 
-class App {
-}
-
 fun main() {
+    initAppConfigFiles()
     SwingUtilities.invokeLater {
         ChefSuggestWindow.getInstance()
     }

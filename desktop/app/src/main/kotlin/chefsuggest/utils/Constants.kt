@@ -2,24 +2,32 @@ package chefsuggest.utils
 
 import java.awt.Color
 import java.awt.Font
+import java.nio.file.Path
+import kotlin.io.path.Path
 
-object AppConstants {
-    private const val UNIX_PATH = "~/.config/ChefSuggest"
-    // TODO: Change to work on Windows as well
-    private const val WINDOWS_PATH = "Users\\Username\\AppData"
+object AppPaths {
+    /**
+     * Returns a path to the directory containing all Chef Suggest program data.
+     * UNIX: /home/username/.ChefSuggest/
+     * WINDOWS: ???
+     */
+    fun getBasePath() : Path {
+        val home = System.getProperty("user.home")
+        return Path("$home/.ChefSuggest")
+    }
 
-    fun getAppConfigPath() : String {
-        val osName = System.getProperty("os.name").lowercase()
-        val osType = when {
-            "windows" in osName -> "WINDOWS"
-            listOf("mac", "nix", "sunos", "solaris", "bsd").any { it in osName } -> "UNIX"
-            else -> ""
-        }
-        return if (osType == "UNIX") {
-            UNIX_PATH
-        } else {
-            WINDOWS_PATH
-        }
+    /**
+     * Returns a path to the file where all meal data is stored.
+     */
+    fun getMealsPath() : Path {
+        return getBasePath().resolve("Meals.tsv")
+    }
+
+    /**
+     * Returns a path to directory containing saved meal configurations.
+     */
+    fun getConfigsPath() : Path {
+        return getBasePath().resolve("SavedConfigs")
     }
 }
 

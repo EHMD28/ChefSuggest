@@ -11,16 +11,12 @@ class ChefSuggestWindow {
         init {
             instance.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
             instance.title = "Chef Suggest"
-//            instance.size = Dimension(500, 500)
             instance.layout = BorderLayout()
-            initUi()
-            instance.isVisible = true
-        }
-
-        private fun initUi() {
             instance.contentPane.background = Palette.PRIMARY_BG
+//            instance.jMenuBar = ChefSuggestMenubar()
             instance.add(TabsPanel(), BorderLayout.CENTER)
             instance.pack()
+            instance.isVisible = true
         }
 
         fun getInstance(): JFrame {

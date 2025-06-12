@@ -12,11 +12,11 @@ import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 import org.jetbrains.kotlinx.dataframe.io.readTsv
 import org.jetbrains.kotlinx.dataframe.io.writeTsv
 import java.nio.file.Path
-import java.time.Period
 import java.time.temporal.ChronoUnit
 
 class MealList private constructor() {
     private val mealList = mutableListOf<Meal>()
+    /* A list containing the names of all the meals in this MealList. */
     private val mealNames
         get() = this.mealList.map { it.name }.sorted()
     val isEmpty
@@ -74,7 +74,7 @@ class MealList private constructor() {
      */
     fun getRandomMeal(except: List<String>) : Meal? {
         // If all meals are the same, it is impossible to pick a unique one.
-        if (this.mealNames == except) return null
+        if (this.mealNames == except.sorted()) return null
         while (true) {
             val meal = this.mealList.random()
             if (meal.name !in except) {

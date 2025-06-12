@@ -1,6 +1,10 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.core.MealList
+import chefsuggest.ui.generator.toolbar.GenerateMealsButton
+import chefsuggest.ui.generator.toolbar.LoadMealsButton
+import chefsuggest.ui.generator.toolbar.NumMealsSpinner
+import chefsuggest.ui.generator.toolbar.SaveMealsButton
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -25,16 +29,22 @@ class GeneratorPanel : JPanel() {
 
     private fun newControlsPanel(): JPanel {
         val panel = JPanel(BorderLayout())
-//        panel.background = Color.ORANGE
-        panel.add(NumMealsSpinner(listOfMealsPanel.viewport.view as JPanel, mealList), BorderLayout.WEST)
-        panel.add(GenerateMealsButton(listOfMealsPanel.viewport.view as JPanel, mealList), BorderLayout.EAST)
+        val actualPanel = listOfMealsPanel.viewport.view as JPanel
+        panel.add(NumMealsSpinner(actualPanel, mealList), BorderLayout.WEST)
+        /*
+        TODO: Save and load lists of meals and filters
+        */
+        val buttonsContainer = JPanel()
+        buttonsContainer.add(SaveMealsButton(actualPanel))
+        buttonsContainer.add(LoadMealsButton(actualPanel))
+        buttonsContainer.add(GenerateMealsButton(actualPanel, mealList))
+        panel.add(buttonsContainer, BorderLayout.EAST)
         return panel
     }
 
     private fun newListOfMealsPanel(): JScrollPane {
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-//        panel.background = Color.RED
         val scrollPane =
             JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         scrollPane.verticalScrollBar.unitIncrement = 16

@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder
 
 data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     val filter = Filter()
+    var mealName = ""
     // Label
     private val label = label()
     private val labelContainer = labelContainer()
@@ -107,10 +108,7 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     private fun tagsFilterButton() : JButton {
         val button = JButton("Edit Tags")
         button.isFocusPainted = false
-        // <TEMP>
-//        val tempTags = listOf("Tag 1", "Tag 2", "Tag 3", "Tag 4")
         val tags = mealList.tags()
-        // </TEMP>
         button.addActionListener { _ ->
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
             val result = DialogUtilities.selectTags(parent, tags, this.filter.tags)
@@ -222,6 +220,7 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     }
 
     fun setMealNameTo(mealName: String) {
+        this.mealName = mealName
         this.label.text = "${index + 1}. $mealName"
     }
 }
