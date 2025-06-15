@@ -10,23 +10,15 @@ import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
-class NumMealsSpinner(mealListPanel: JPanel, mealList: MealList) : JPanel() {
+class NumMealsSpinnerContainer(mealListPanel: JPanel, mealList: MealList) : JPanel() {
+    val spinner = spinner()
+
     init {
         val label = JLabel("Number of Meals to Generate: ")
         label.font = Palette.getPrimaryFontWithSize(16)
-        val initValue = 0
-        val minValue = 0
-        val maxValue = 10
-        val step = 1
-        val spinnerModel = SpinnerNumberModel(initValue, minValue, maxValue, step)
-        val spinner = JSpinner(spinnerModel)
-        val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
-        spinnerEditor.textField.preferredSize = Dimension(50, 20)
-        spinnerEditor.size = Dimension(50, 20)
-        spinnerEditor.textField.isEditable = false
         spinner.addChangeListener {
             spinner.commitEdit()
-            val value = spinner.value as Int;
+            val value = spinner.value as Int
             val numMealSelectors = mealListPanel.components.size
             if (value > numMealSelectors) {
                 val mealSelectorPanel = MealFilterPanel(numMealSelectors, mealList)
@@ -44,5 +36,19 @@ class NumMealsSpinner(mealListPanel: JPanel, mealList: MealList) : JPanel() {
         this.preferredSize = Dimension(280, 50)
         this.add(label)
         this.add(spinner)
+    }
+
+    private fun spinner() : JSpinner {
+        val initValue = 0
+        val minValue = 0
+        val maxValue = 10
+        val step = 1
+        val spinnerModel = SpinnerNumberModel(initValue, minValue, maxValue, step)
+        val spinner = JSpinner(spinnerModel)
+        val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
+        spinnerEditor.textField.preferredSize = Dimension(50, 20)
+        spinnerEditor.size = Dimension(50, 20)
+        spinnerEditor.textField.isEditable = false
+        return spinner
     }
 }

@@ -1,6 +1,7 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.core.Filter
+import chefsuggest.core.MealConfiguration
 import chefsuggest.core.MealList
 import chefsuggest.core.PrepTimeBucket
 import chefsuggest.utils.Palette
@@ -15,6 +16,14 @@ import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
 data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
+    // Getters and Setters
+    override fun getMaximumSize(): Dimension {
+        return Dimension(
+            this.parent.width,
+            this.preferredSize.height
+        )
+    }
+    // Variables
     val filter = Filter()
     var mealName = ""
     // Label
@@ -36,6 +45,15 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     // Container for filters.
     private val filtersContainer = filtersContainer()
 
+    companion object {
+        fun fromConfig(index: Int, mealList: MealList, configuration: MealConfiguration) : MealFilterPanel {
+            val panel = MealFilterPanel(index, mealList)
+            panel.setMealNameTo(configuration.name)
+            panel.setFilterTo(configuration.filter)
+            return panel
+        }
+    }
+
     init {
         this.layout = BorderLayout()
         this.background = Color.WHITE
@@ -45,8 +63,6 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         this.add(labelContainer, BorderLayout.LINE_START)
         this.add(lockButtonContainer, BorderLayout.CENTER)
         this.add(filtersContainer, BorderLayout.LINE_END)
-        // TODO: Add appropriate minimum and maximum size.
-        // ! I HATE BOX_LAYOUT!!!!!!!1!1!!!!1
         this.minimumSize = Dimension(100, 75)
     }
 
@@ -75,6 +91,32 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
             this.prepTimeDropdown.isEnabled = true
             this.lastUsedSpinner.isEnabled = true
         }
+    }
+
+    private fun setTagsLabel(tags: List<String>) {
+        this.filter.tags = tags
+        val text = if (tags.isEmpty()) "None" else tags.toString()
+        this.selectedTagsTextArea.text = "Selected Tags: $text"
+        this.tagsFilterContainer.preferredSize = null
+//        this.maximumSize = Dimension(
+//            this.parent.width,
+//            this.preferredSize.height)
+//        this.revalidate()
+//        this.parent.revalidate()
+//        this.parent.repaint()
+    }
+
+    private fun setPrepTime(prepTime: PrepTimeBucket) {
+        this.prepTimeDropdown.selectedItem = when (prepTime) {
+            PrepTimeBucket.NONE -> 0
+            PrepTimeBucket.QUICK -> 1
+            PrepTimeBucket.MEDIUM -> 2
+            PrepTimeBucket.LONG -> 3
+        }
+    }
+
+    private fun setLastUsed(days: Int) {
+        this.lastUsedSpinner.value = days
     }
 
     private fun lockButton() : JToggleButton {
@@ -113,16 +155,13 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
             val result = DialogUtilities.selectTags(parent, tags, this.filter.tags)
             if (!result.isCanceled && result.tags != null) {
-                val selectedTags = result.tags
-                this.filter.tags = selectedTags
-                val text = if (filter.tags.isEmpty()) "None" else filter.tags.toString()
-                this.selectedTagsTextArea.text = "Selected Tags: $text"
-                this.tagsFilterContainer.preferredSize = null
-                this.maximumSize = Dimension(this.parent.width, this.preferredSize.height)
+                setTagsLabel(result.tags)
+//                this.maximumSize = Dimension(
+//                    this.parent.width,
+//                    this.preferredSize.height)
                 this.revalidate()
                 this.parent.revalidate()
                 this.parent.repaint()
-                println("DEBUG: SELECTED TAGS - $selectedTags")
             }
         }
         return button
@@ -222,5 +261,22 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     fun setMealNameTo(mealName: String) {
         this.mealName = mealName
         this.label.text = "${index + 1}. $mealName"
+    }
+
+    fun setFilterTo(f: Filter) {
+        filter.tags = f.tags
+        setTagsLabel(f.tags)
+        filter.prepTime = f.prepTime
+        setPrepTime(f.prepTime)
+        filter.lastUsed = f.lastUsed
+        setLastUsed(f.lastUsed)
+        filter.isLocked = f.isLocked
+        setFilterLock(f.isLocked)
+//        this.maximumSize = Dimension(
+//            this.parent.width,
+//            this.preferredSize.height)
+        this.revalidate()
+        this.parent.revalidate()
+        this.parent.repaint()
     }
 }

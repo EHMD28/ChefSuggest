@@ -3,7 +3,7 @@ package chefsuggest.ui.generator
 import chefsuggest.core.MealList
 import chefsuggest.ui.generator.toolbar.GenerateMealsButton
 import chefsuggest.ui.generator.toolbar.LoadMealsButton
-import chefsuggest.ui.generator.toolbar.NumMealsSpinner
+import chefsuggest.ui.generator.toolbar.NumMealsSpinnerContainer
 import chefsuggest.ui.generator.toolbar.SaveMealsButton
 import java.awt.BorderLayout
 import java.awt.Color
@@ -16,8 +16,13 @@ import kotlin.io.path.Path
 
 class GeneratorPanel : JPanel() {
     private val mealList = MealList.fromTsv(Path("app/src/test/kotlin/chefsuggest/resources/LoadTest/TestMeals.tsv"))
-    private val listOfMealsPanel = newListOfMealsPanel()
-    private val controlsPanel = newControlsPanel()
+    private val listOfMealsPanel = listOfMealsPanel()
+    private val internalPanel = listOfMealsPanel.viewport.view as JPanel
+    private val spinnerContainer = NumMealsSpinnerContainer(internalPanel, mealList)
+    private val saveMealsButton = SaveMealsButton(internalPanel)
+    private val loadMealsButton = LoadMealsButton(internalPanel, mealList, spinnerContainer.spinner)
+    private val generateMealsButton = GenerateMealsButton(internalPanel, mealList)
+    private val controlsPanel = controlsPanel()
 
     init {
         this.layout = BorderLayout()
@@ -27,22 +32,21 @@ class GeneratorPanel : JPanel() {
         this.add(listOfMealsPanel, BorderLayout.CENTER)
     }
 
-    private fun newControlsPanel(): JPanel {
+    private fun controlsPanel(): JPanel {
         val panel = JPanel(BorderLayout())
-        val actualPanel = listOfMealsPanel.viewport.view as JPanel
-        panel.add(NumMealsSpinner(actualPanel, mealList), BorderLayout.WEST)
+        panel.add(spinnerContainer, BorderLayout.WEST)
         /*
         TODO: Save and load lists of meals and filters
         */
         val buttonsContainer = JPanel()
-        buttonsContainer.add(SaveMealsButton(actualPanel))
-        buttonsContainer.add(LoadMealsButton(actualPanel))
-        buttonsContainer.add(GenerateMealsButton(actualPanel, mealList))
+        buttonsContainer.add(this.saveMealsButton)
+        buttonsContainer.add(this.loadMealsButton)
+        buttonsContainer.add(this.generateMealsButton)
         panel.add(buttonsContainer, BorderLayout.EAST)
         return panel
     }
 
-    private fun newListOfMealsPanel(): JScrollPane {
+    private fun listOfMealsPanel(): JScrollPane {
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
         val scrollPane =
