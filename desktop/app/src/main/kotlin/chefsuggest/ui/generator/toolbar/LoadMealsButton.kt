@@ -34,15 +34,14 @@ class LoadMealsButton(filtersPanel: JPanel, mealList: MealList, spinner: JSpinne
             val files = configsPath.listDirectoryEntries()
             val names = files.map { it.name.replace(".config.json", "") }
             val parentFrame = SwingUtilities.getWindowAncestor(this) as JFrame
-//            val input = JOptionPane.showInputDialog(parentFrame,
-//                "Which configuration would you like to load?",
-//                "Choose Configuration",
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                names.toTypedArray(),
-//                names.first()
-//            )
-            val input = "baz"
+            val input = JOptionPane.showInputDialog(parentFrame,
+                "Which configuration would you like to load?",
+                "Choose Configuration",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                names.toTypedArray(),
+                names.first()
+            )
             val filePath = configsPath.resolve("$input.config.json")
             val text = filePath.readText()
             val data = Json.decodeFromString<FilterList>(text)

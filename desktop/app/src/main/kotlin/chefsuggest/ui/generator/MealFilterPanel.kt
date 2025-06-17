@@ -47,10 +47,11 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
 
     companion object {
         fun fromConfig(index: Int, mealList: MealList, configuration: MealConfiguration) : MealFilterPanel {
-            val panel = MealFilterPanel(index, mealList)
-            panel.setMealNameTo(configuration.name)
-            panel.setFilterTo(configuration.filter)
-            return panel
+            TODO()
+//            val panel = MealFilterPanel(index, mealList)
+//            panel.setMealNameTo(configuration.name)
+//            panel.setFilterTo(configuration.filter)
+//            return panel
         }
     }
 
@@ -83,10 +84,12 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     private fun setFilterLock(isLocked: Boolean) {
         this.filter.isLocked = isLocked
         if (isLocked) {
+            this.lockButton.isSelected = true
             this.tagsFilterButton.isEnabled = false
             this.prepTimeDropdown.isEnabled = false
             this.lastUsedSpinner.isEnabled = false
         } else {
+            this.lockButton.isSelected = false
             this.tagsFilterButton.isEnabled = true
             this.prepTimeDropdown.isEnabled = true
             this.lastUsedSpinner.isEnabled = true
@@ -98,24 +101,24 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         val text = if (tags.isEmpty()) "None" else tags.toString()
         this.selectedTagsTextArea.text = "Selected Tags: $text"
         this.tagsFilterContainer.preferredSize = null
-//        this.maximumSize = Dimension(
-//            this.parent.width,
-//            this.preferredSize.height)
 //        this.revalidate()
 //        this.parent.revalidate()
 //        this.parent.repaint()
     }
 
     private fun setPrepTime(prepTime: PrepTimeBucket) {
-        this.prepTimeDropdown.selectedItem = when (prepTime) {
+        this.filter.prepTime = prepTime
+        this.prepTimeDropdown.selectedIndex = when (prepTime) {
             PrepTimeBucket.NONE -> 0
             PrepTimeBucket.QUICK -> 1
             PrepTimeBucket.MEDIUM -> 2
             PrepTimeBucket.LONG -> 3
         }
+//        println("DEBUG - Set prep time to ${filter.prepTime.name} | Selected prep time: ${prepTimeDropdown.selectedItem}")
     }
 
     private fun setLastUsed(days: Int) {
+        this.filter.lastUsed = days
         this.lastUsedSpinner.value = days
     }
 
@@ -156,9 +159,6 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
             val result = DialogUtilities.selectTags(parent, tags, this.filter.tags)
             if (!result.isCanceled && result.tags != null) {
                 setTagsLabel(result.tags)
-//                this.maximumSize = Dimension(
-//                    this.parent.width,
-//                    this.preferredSize.height)
                 this.revalidate()
                 this.parent.revalidate()
                 this.parent.repaint()
@@ -259,22 +259,15 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     }
 
     fun setMealNameTo(mealName: String) {
-        this.mealName = mealName
+        this.mealName = mealName.ifEmpty { "Meal Name" }
         this.label.text = "${index + 1}. $mealName"
     }
 
     fun setFilterTo(f: Filter) {
-        filter.tags = f.tags
         setTagsLabel(f.tags)
-        filter.prepTime = f.prepTime
         setPrepTime(f.prepTime)
-        filter.lastUsed = f.lastUsed
         setLastUsed(f.lastUsed)
-        filter.isLocked = f.isLocked
         setFilterLock(f.isLocked)
-//        this.maximumSize = Dimension(
-//            this.parent.width,
-//            this.preferredSize.height)
         this.revalidate()
         this.parent.revalidate()
         this.parent.repaint()

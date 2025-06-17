@@ -75,6 +75,7 @@ class MealList private constructor() {
     fun getRandomMeal(except: List<String>) : Meal? {
         // If all meals are the same, it is impossible to pick a unique one.
         if (this.mealNames == except.sorted()) return null
+        if (this.mealList.isEmpty()) return null
         while (true) {
             val meal = this.mealList.random()
             if (meal.name !in except) {
