@@ -35,9 +35,6 @@ class GeneratorPanel : JPanel() {
     private fun controlsPanel(): JPanel {
         val panel = JPanel(BorderLayout())
         panel.add(spinnerContainer, BorderLayout.WEST)
-        /*
-        TODO: Save and load lists of meals and filters
-        */
         val buttonsContainer = JPanel()
         buttonsContainer.add(this.saveMealsButton)
         buttonsContainer.add(this.loadMealsButton)

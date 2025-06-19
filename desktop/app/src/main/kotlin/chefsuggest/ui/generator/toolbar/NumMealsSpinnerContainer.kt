@@ -21,16 +21,16 @@ class NumMealsSpinnerContainer(mealListPanel: JPanel, mealList: MealList) : JPan
             val value = spinner.value as Int
             val numMealSelectors = mealListPanel.components.size
             if (value > numMealSelectors) {
-                val mealSelectorPanel = MealFilterPanel(numMealSelectors, mealList)
-                val height = mealSelectorPanel.preferredSize.height
+                val mealFilterPanel = MealFilterPanel(numMealSelectors, mealList)
+                val height = mealFilterPanel.preferredSize.height
                 val width = mealListPanel.width
-                mealSelectorPanel.maximumSize = Dimension(width, height)
-                mealListPanel.add(mealSelectorPanel)
+                mealFilterPanel.maximumSize = Dimension(width, height)
+                mealListPanel.add(mealFilterPanel)
             } else if (value < numMealSelectors) {
                 mealListPanel.remove(mealListPanel.components.last())
-                mealListPanel.repaint()
             }
             mealListPanel.revalidate()
+            mealListPanel.repaint()
         }
         this.layout = FlowLayout()
         this.preferredSize = Dimension(280, 50)

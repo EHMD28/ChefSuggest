@@ -1,6 +1,6 @@
 package chefsuggest.ui.core
 
-import chefsuggest.ui.editor.EditorPanel
+import chefsuggest.ui.editor.EditorTab
 import chefsuggest.ui.generator.GeneratorPanel
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
@@ -12,10 +12,11 @@ import javax.swing.border.EmptyBorder
 class TabsPanel : JPanel() {
     init {
         val generatorPanel = GeneratorPanel()
-        val editorPanel = EditorPanel()
+        val editorPanel = EditorTab()
         val tabbedPane = JTabbedPane()
         tabbedPane.addTab("Meal Generator", generatorPanel)
         tabbedPane.addTab("Meal Editor", editorPanel)
+        tabbedPane.selectedIndex = 1
         tabbedPane.background = Palette.SECONDARY_BG
         tabbedPane.font = Palette.getPrimaryFontWithSize(18)
         tabbedPane.foreground = Color.BLACK

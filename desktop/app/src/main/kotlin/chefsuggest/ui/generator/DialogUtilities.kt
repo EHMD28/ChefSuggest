@@ -25,7 +25,7 @@ object DialogUtilities {
         val usedNames = configsPath.listDirectoryEntries().map { it.name.split(".")[0] }
         while (true) {
             val name = JOptionPane.showInputDialog("What name would you like to save this configuration as?")
-            if (name.isEmpty() || !name.all { it.isLetter() }) JOptionPane.showMessageDialog(frame , "Invalid name.")
+            if (name.isEmpty() || !name.all { it.isLetterOrDigit() }) JOptionPane.showMessageDialog(frame , "Invalid name.")
             else if (name !in usedNames) return name
             else JOptionPane.showMessageDialog(frame, "Name is already used by another configuration.")
         }

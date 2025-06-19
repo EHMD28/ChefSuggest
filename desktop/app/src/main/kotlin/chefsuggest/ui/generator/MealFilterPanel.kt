@@ -45,16 +45,6 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
     // Container for filters.
     private val filtersContainer = filtersContainer()
 
-    companion object {
-        fun fromConfig(index: Int, mealList: MealList, configuration: MealConfiguration) : MealFilterPanel {
-            TODO()
-//            val panel = MealFilterPanel(index, mealList)
-//            panel.setMealNameTo(configuration.name)
-//            panel.setFilterTo(configuration.filter)
-//            return panel
-        }
-    }
-
     init {
         this.layout = BorderLayout()
         this.background = Color.WHITE
@@ -114,7 +104,6 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
             PrepTimeBucket.MEDIUM -> 2
             PrepTimeBucket.LONG -> 3
         }
-//        println("DEBUG - Set prep time to ${filter.prepTime.name} | Selected prep time: ${prepTimeDropdown.selectedItem}")
     }
 
     private fun setLastUsed(days: Int) {

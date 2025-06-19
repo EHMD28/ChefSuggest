@@ -7,8 +7,7 @@ import chefsuggest.utils.AppPaths
 import chefsuggest.utils.Palette
 import kotlinx.serialization.json.Json
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
+import java.nio.file.Path
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JOptionPane
@@ -30,19 +29,7 @@ class LoadMealsButton(filtersPanel: JPanel, mealList: MealList, spinner: JSpinne
             filtersPanel.removeAll()
             filtersPanel.revalidate()
             filtersPanel.repaint()
-            val configsPath = AppPaths.getConfigsPath()
-            val files = configsPath.listDirectoryEntries()
-            val names = files.map { it.name.replace(".config.json", "") }
-            val parentFrame = SwingUtilities.getWindowAncestor(this) as JFrame
-            val input = JOptionPane.showInputDialog(parentFrame,
-                "Which configuration would you like to load?",
-                "Choose Configuration",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                names.toTypedArray(),
-                names.first()
-            )
-            val filePath = configsPath.resolve("$input.config.json")
+            val filePath = this.getConfigPath()
             val text = filePath.readText()
             val data = Json.decodeFromString<FilterList>(text)
             val numPanels = data.configurations.mapIndexed { index, config ->
@@ -53,5 +40,21 @@ class LoadMealsButton(filtersPanel: JPanel, mealList: MealList, spinner: JSpinne
             }.size
             spinner.value = numPanels
         }
+    }
+
+    private fun getConfigPath() : Path {
+        val configsPath = AppPaths.getConfigsPath()
+        val files = configsPath.listDirectoryEntries()
+        val names = files.map { it.name.replace(".config.json", "") }
+        val parentFrame = SwingUtilities.getWindowAncestor(this) as JFrame
+        val input = JOptionPane.showInputDialog(parentFrame,
+            "Which configuration would you like to load?",
+            "Choose Configuration",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            names.toTypedArray(),
+            names.first()
+        )
+        return configsPath.resolve("$input.config.json")
     }
 }
