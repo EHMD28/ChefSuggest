@@ -14,7 +14,7 @@ import javax.swing.JScrollPane
 import kotlin.io.path.Path
 
 
-class GeneratorPanel : JPanel() {
+class GeneratorTab : JPanel() {
     private val mealList = MealList.fromTsv(Path("app/src/test/kotlin/chefsuggest/resources/LoadTest/TestMeals.tsv"))
     private val listOfMealsPanel = listOfMealsPanel()
     private val internalPanel = listOfMealsPanel.viewport.view as JPanel

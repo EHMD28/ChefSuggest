@@ -6,10 +6,10 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class Meal(
-    val name: String,
-    val tags: List<String>,
-    val prepTime: Int,
-    val lastUsed: LocalDate
+    var name: String,
+    var tags: List<String>,
+    var prepTime: Int,
+    var lastUsed: LocalDate
 ) {
     override fun toString() : String {
         return Json.encodeToString(this)

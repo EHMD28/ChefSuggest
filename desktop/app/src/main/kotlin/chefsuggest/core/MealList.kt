@@ -60,6 +60,10 @@ class MealList private constructor() {
         df.writeTsv(path)
     }
 
+    fun meals() : List<Meal> {
+        return this.mealList
+    }
+
     fun size() : Int {
         return this.mealList.size
     }

@@ -33,6 +33,7 @@ dependencies {
     implementation("com.google.guava:guava:32.1.1-jre")
     implementation("org.jetbrains.kotlinx:dataframe:1.0.0-Beta2")
     implementation("org.slf4j:slf4j-simple:2.0.9") // Required by kotlinx Dataframe... for reasons.
+    implementation("com.miglayout:miglayout-swing:11.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
