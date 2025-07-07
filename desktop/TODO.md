@@ -6,17 +6,18 @@
     - [X] Add filter for every meal
     - [X] Save list of meals/filters
     - [X] Load saved list of meals/filters
-    - [ ] Update last used
+    - [X] Update last used
 - [X] Store meals as TSV instead of JSON
 
 ## Editor
-- [ ] View meals
+- [X] View meals
 - [ ] Edit meals
-  - [ ] Name
-  - [ ] Tags
-  - [ ] Prep Time
-  - [ ] New
-  - [ ] Delete 
+  - [X] Name
+  - [X] Tags
+  - [X] Prep Time
+  - [X] *Last Used*
+  - [X] New
+  - [X] *Delete*
 - [X] Editor toolbar
   - [X] Load meals
   - [X] Save meals
@@ -32,3 +33,5 @@
 - [ ] Clean up code
   - [ ] Refractor long blocks into functions
   - [ ] Move all major UI components into individual classes
+  - [ ] Create object instances for global variable variables
+

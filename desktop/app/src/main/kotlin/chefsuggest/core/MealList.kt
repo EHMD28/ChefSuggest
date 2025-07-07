@@ -15,12 +15,12 @@ import java.nio.file.Path
 import java.time.temporal.ChronoUnit
 
 class MealList private constructor() {
-    private val mealList = mutableListOf<Meal>()
+    private val internalList = mutableListOf<Meal>()
     /* A list containing the names of all the meals in this MealList. */
     private val mealNames
-        get() = this.mealList.map { it.name }.sorted()
+        get() = this.internalList.map { it.name }.sorted()
     val isEmpty
-        get() = this.mealList.isEmpty()
+        get() = this.internalList.isEmpty()
 
     companion object {
         fun fromMeals(meals: List<Meal>): MealList {
@@ -50,7 +50,7 @@ class MealList private constructor() {
 
     fun writeToTsv(path: Path) {
         val mealRows =
-            this.mealList.map { meal -> MealRow(
+            this.internalList.map { meal -> MealRow(
                 name = meal.name,
                 tags = meal.tags.joinToString(","),
                 prepTime = meal.prepTime,
@@ -61,15 +61,23 @@ class MealList private constructor() {
     }
 
     fun meals() : List<Meal> {
-        return this.mealList
+        return this.internalList
     }
 
     fun size() : Int {
-        return this.mealList.size
+        return this.internalList.size
     }
 
     fun tags() : List<String> {
-        return this.mealList.map { it.tags }.flatten().distinct().sorted()
+        return this.internalList.map { it.tags }.flatten().distinct().sorted()
+    }
+
+    fun updateLastUsed(names: List<String>, today: LocalDate) {
+        internalList.forEach {
+            if (it.name in mealNames) {
+                it.lastUsed = today
+            }
+        }
     }
 
     /**
@@ -79,9 +87,9 @@ class MealList private constructor() {
     fun getRandomMeal(except: List<String>) : Meal? {
         // If all meals are the same, it is impossible to pick a unique one.
         if (this.mealNames == except.sorted()) return null
-        if (this.mealList.isEmpty()) return null
+        if (this.internalList.isEmpty()) return null
         while (true) {
-            val meal = this.mealList.random()
+            val meal = this.internalList.random()
             if (meal.name !in except) {
                 return meal
             }
@@ -93,12 +101,16 @@ class MealList private constructor() {
      */
     fun addMeal(meal: Meal) {
 //        require(meal.name !in mealNames) { "Meal with that name already exists." }
-        this.mealList.add(meal)
-        this.mealList.sortBy { it.name }
+        this.internalList.add(meal)
+        this.internalList.sortBy { it.name }
+    }
+
+    fun removeMeal(meal: Meal) {
+        this.internalList.removeIf { it.name == meal.name }
     }
 
     fun applyFilter(filter: Filter) : MealList {
-        val filtered = this.mealList.filter { meal ->
+        val filtered = this.internalList.filter { meal ->
             val cond1 = filter.tags.isEmpty() || meal.tags.any { it in filter.tags }
             val cond2 = when (filter.prepTime) {
                 PrepTimeBucket.QUICK -> meal.prepTime <= 30
@@ -116,7 +128,7 @@ class MealList private constructor() {
 
     override fun equals(other: Any?): Boolean {
         if (other !is MealList) throw IllegalArgumentException("Expected MealList type")
-        this.mealList.zip(other.mealList).forEach { (thisMeal, otherMeal) ->
+        this.internalList.zip(other.internalList).forEach { (thisMeal, otherMeal) ->
             if (thisMeal != otherMeal) {
                 return false
             }
@@ -125,10 +137,10 @@ class MealList private constructor() {
     }
 
     override fun toString(): String {
-        return mealList.toString()
+        return internalList.toString()
     }
 
     override fun hashCode(): Int {
-        return mealList.hashCode()
+        return internalList.hashCode()
     }
 }

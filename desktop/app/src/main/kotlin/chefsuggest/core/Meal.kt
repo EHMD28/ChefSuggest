@@ -6,9 +6,9 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class Meal(
-    var name: String,
-    var tags: List<String>,
-    var prepTime: Int,
+    var name: String = "",
+    var tags: List<String> = listOf(),
+    var prepTime: Int = 0,
     var lastUsed: LocalDate
 ) {
     override fun toString() : String {

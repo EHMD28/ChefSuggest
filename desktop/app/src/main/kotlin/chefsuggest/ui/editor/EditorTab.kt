@@ -9,6 +9,7 @@ import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.JPanel
 import javax.swing.JScrollPane
+import javax.swing.border.EmptyBorder
 import kotlin.io.path.Path
 
 class EditorTab : JPanel() {
@@ -25,8 +26,8 @@ class EditorTab : JPanel() {
 
     private fun mealsContainer() : JScrollPane {
         val panel = JPanel()
+        panel.layout = MigLayout("wrap 2, insets 10", "[grow][grow]")
         initMealsPanel(panel)
-        panel.layout = MigLayout("wrap 2", "[grow][grow]")
         val scrollPane = JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         scrollPane.verticalScrollBar.unitIncrement = 16
         return scrollPane
@@ -34,7 +35,7 @@ class EditorTab : JPanel() {
 
     private fun initMealsPanel(panel: JPanel) {
         for (meal in mealList.meals()) {
-            panel.add(MealEditorPanel(meal), "growx")
+            panel.add(MealEditorPanel(meal, mealList), "growx 50")
         }
     }
 }
