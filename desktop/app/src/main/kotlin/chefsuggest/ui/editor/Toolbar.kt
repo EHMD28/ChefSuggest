@@ -34,7 +34,7 @@ class Toolbar(val editorsContainer: JPanel) : JPanel() {
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             val meal = Meal(name = "Meal Name", lastUsed = today)
             mealList.addMeal(meal)
-            editorsContainer.add(MealEditorPanel(meal, mealList), "growx 50")
+            editorsContainer.add(MealEditorPanel(meal), "growx 50")
             editorsContainer.revalidate()
             editorsContainer.repaint()
         }

@@ -1,26 +1,24 @@
 package chefsuggest.ui.core
 
+import chefsuggest.core.MealList
+import chefsuggest.utils.AppPaths
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
 import javax.swing.JFrame
 
-class ChefSuggestWindow {
-    companion object {
-        private val instance = JFrame()
+object ChefSuggestWindow : JFrame() {
+    private fun readResolve(): Any = ChefSuggestWindow
 
-        init {
-            instance.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-            instance.title = "Chef Suggest"
-            instance.layout = BorderLayout()
-            instance.contentPane.background = Palette.PRIMARY_BG
-//            instance.jMenuBar = ChefSuggestMenubar()
-            instance.add(TabsPanel(), BorderLayout.CENTER)
-            instance.pack()
-            instance.isVisible = true
-        }
-
-        fun getInstance(): JFrame {
-            return instance;
-        }
+    init {
+        this.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        this.title = "Chef Suggest"
+        this.layout = BorderLayout()
+        this.contentPane.background = Palette.PRIMARY_BG
+        this.add(TabsPanel(), BorderLayout.CENTER)
+        this.pack()
     }
+}
+
+object Globals {
+    val mealsList = MealList.fromTsv(AppPaths.getMealsPath())
 }

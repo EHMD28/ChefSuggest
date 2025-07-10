@@ -18,7 +18,7 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 import kotlin.io.path.readText
 
-class LoadMealsButton(filtersPanel: JPanel, mealList: MealList, spinner: JSpinner) : JButton() {
+class LoadMealsButton(filtersPanel: JPanel, spinner: JSpinner) : JButton() {
     init {
         this.text = "Load Meals Configuration"
         this.font = Palette.getPrimaryFontWithSize(14)
@@ -33,10 +33,10 @@ class LoadMealsButton(filtersPanel: JPanel, mealList: MealList, spinner: JSpinne
             val text = filePath.readText()
             val data = Json.decodeFromString<FilterList>(text)
             val numPanels = data.configurations.mapIndexed { index, config ->
-                val panel = MealFilterPanel(index, mealList)
+                val panel = MealFilterPanel(index)
                 filtersPanel.add(panel)
-                panel.setMealNameTo(config.name)
-                panel.setFilterTo(config.filter)
+                panel.mealName = config.name
+                panel.filter = config.filter
             }.size
             spinner.value = numPanels
         }

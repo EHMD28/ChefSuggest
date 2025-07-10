@@ -1,12 +1,9 @@
 package chefsuggest.ui.editor
 
 import chefsuggest.core.Meal
-import chefsuggest.core.MealList
+import chefsuggest.ui.core.Globals
 import chefsuggest.ui.generator.DialogUtilities
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.todayIn
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.FlowLayout
@@ -20,21 +17,16 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.JTextArea
-import javax.swing.JTextField
 import javax.swing.SpinnerNumberModel
 import javax.swing.SwingUtilities
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
-class MealEditorPanel(val meal: Meal, val mealList: MealList) : JPanel() {
+class MealEditorPanel(val meal: Meal) : JPanel() {
     private val label = nameField()
-    private val tagsButton = tagsButton()
-    private val tagsContainer = tagsContainer()
-    private val prepTimeSpinner = prepTimeSpinner()
-    private val prepTimeContainer = prepTimeContainer()
-    private val lastUsedLabel = lastUsedLabel()
-    private val lastUsedButton = lastUsedButton()
-    private val lastUsedContainer = lastUsedContainer()
+    private val tagsContainer = TagsContainer(meal)
+    private val prepTimeContainer = PrepTimeContainer(meal)
+    private val lastUsedContainer = LastUsedContainer(meal)
     private val removeButton = removeButton()
 
     init {
@@ -68,20 +60,48 @@ class MealEditorPanel(val meal: Meal, val mealList: MealList) : JPanel() {
         return textArea
     }
 
+    private fun removeButton() : JButton {
+        val button = JButton("X")
+        button.addActionListener {
+            /* Calling parent.remove(this) means parent can no longer be referenced using this. */
+            val parent = this.parent
+            parent.remove(this)
+            Globals.mealsList.removeMeal(this.meal)
+            parent.revalidate()
+            parent.repaint()
+        }
+        button.background = Color.RED
+        button.foreground = Color.WHITE
+        return button
+    }
+}
+
+private class TagsContainer(val meal: Meal) : JPanel() {
+    private val tagsButton = tagsButton()
+
+    init {
+        this.layout = BorderLayout()
+        this.add(tagsButton, BorderLayout.CENTER)
+    }
+
     private fun tagsButton() : JButton {
         val tagsButton = JButton("Edit Tags")
         tagsButton.addActionListener {
             val frame = SwingUtilities.getWindowAncestor(this) as JFrame
-            DialogUtilities.editTags(frame, mealList, this.meal)
+            DialogUtilities.editTags(frame, this.meal)
         }
         return tagsButton
     }
+}
 
-    private fun tagsContainer() : JPanel {
-        val panel = JPanel()
-        panel.layout = BorderLayout()
-        panel.add(tagsButton, BorderLayout.CENTER)
-        return panel
+private class PrepTimeContainer(val meal: Meal) : JPanel() {
+    private val prepTimeSpinner = prepTimeSpinner()
+
+    init {
+        this.layout = BorderLayout()
+        val label = JLabel("Prep Time:")
+        this.add(label, BorderLayout.PAGE_START)
+        this.add(prepTimeSpinner, BorderLayout.PAGE_END)
     }
 
     private fun prepTimeSpinner() : JSpinner {
@@ -97,53 +117,32 @@ class MealEditorPanel(val meal: Meal, val mealList: MealList) : JPanel() {
         }
         return spinner
     }
+}
 
-    private fun prepTimeContainer() : JPanel {
-        val panel = JPanel()
-        panel.layout = BorderLayout()
-        val label = JLabel("Prep Time:")
-        panel.add(label, BorderLayout.PAGE_START)
-        panel.add(prepTimeSpinner, BorderLayout.PAGE_END)
-        return panel
+private class LastUsedContainer(val meal: Meal) : JPanel() {
+    private val label = label()
+    private val button = button()
+
+    init {
+        this.layout = BorderLayout()
+        this.add(label, BorderLayout.PAGE_START)
+        this.add(button, BorderLayout.PAGE_END)
     }
 
-    private fun lastUsedLabel() : JLabel {
+    private fun label() : JLabel {
         val text = meal.lastUsed.toJavaLocalDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
         val lastUsed = JLabel("Last Used: $text")
         return lastUsed
     }
 
-    private fun lastUsedButton() : JButton {
+    private fun button() : JButton {
         val button = JButton("Update Date")
         button.addActionListener {
             val frame = SwingUtilities.getWindowAncestor(this) as JFrame
             val date = DialogUtilities.chooseDate(frame, meal.lastUsed)
             val text = date.toJavaLocalDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
-            lastUsedLabel.text = text
+            label.text = text
         }
-        return button
-    }
-
-    private fun lastUsedContainer() : JPanel {
-        val panel = JPanel()
-        panel.layout = BorderLayout()
-        panel.add(lastUsedLabel, BorderLayout.PAGE_START)
-        panel.add(lastUsedButton, BorderLayout.PAGE_END)
-        return panel
-    }
-
-    private fun removeButton() : JButton {
-        val button = JButton("X")
-        button.addActionListener {
-            /* Calling parent.remove(this) means parent can no longer be referenced using this. */
-            val parent = this.parent
-            parent.remove(this)
-            mealList.removeMeal(this.meal)
-            parent.revalidate()
-            parent.repaint()
-        }
-        button.background = Color.RED
-        button.foreground = Color.WHITE
         return button
     }
 }

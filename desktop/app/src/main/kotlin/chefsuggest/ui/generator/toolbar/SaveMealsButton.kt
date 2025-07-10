@@ -2,7 +2,7 @@ package chefsuggest.ui.generator.toolbar
 
 import chefsuggest.core.FilterList
 import chefsuggest.core.MealConfiguration
-import chefsuggest.core.MealList
+import chefsuggest.ui.core.Globals
 import chefsuggest.ui.generator.DialogUtilities
 import chefsuggest.ui.generator.MealFilterPanel
 import chefsuggest.utils.AppPaths
@@ -19,7 +19,7 @@ import kotlin.io.path.bufferedWriter
 import kotlin.io.path.createFile
 import kotlin.io.path.exists
 
-class SaveMealsButton(filtersPanel: JPanel, mealList: MealList) : JButton() {
+class SaveMealsButton(filtersPanel: JPanel) : JButton() {
     init {
         /* First */
         this.text = "Save Meals Configuration"
@@ -28,7 +28,7 @@ class SaveMealsButton(filtersPanel: JPanel, mealList: MealList) : JButton() {
         this.isFocusPainted = false
         this.addActionListener {
             val panels = filtersPanel.components.map { it as MealFilterPanel }
-            val configs = panels.map { MealConfiguration(it.mealName, it.filter) }
+            val configs = panels.map { MealConfiguration(it.mealName, it.internalFilter) }
             val filterList = FilterList(configs)
             val dirPath = AppPaths.getConfigsPath()
             val frame = SwingUtilities.getWindowAncestor(this) as JFrame
@@ -41,7 +41,7 @@ class SaveMealsButton(filtersPanel: JPanel, mealList: MealList) : JButton() {
             /* Then */
             val mealNames = configs.map { it.name }
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-            mealList.updateLastUsed(mealNames, today)
+            Globals.mealsList.updateLastUsed(mealNames, today)
         }
     }
 }

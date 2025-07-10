@@ -1,19 +1,13 @@
 package chefsuggest.ui.editor
 
-import chefsuggest.core.Meal
-import chefsuggest.core.MealList
-import chefsuggest.utils.AppPaths
-import kotlinx.datetime.LocalDate
+import chefsuggest.ui.core.Globals
 import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.JPanel
 import javax.swing.JScrollPane
-import javax.swing.border.EmptyBorder
-import kotlin.io.path.Path
 
 class EditorTab : JPanel() {
-    private val mealList = MealList.fromTsv(AppPaths.getMealsPath())
     private val mealsContainer = mealsContainer()
     private val toolbar = Toolbar(mealsContainer.viewport.view as JPanel)
 
@@ -34,8 +28,8 @@ class EditorTab : JPanel() {
     }
 
     private fun initMealsPanel(panel: JPanel) {
-        for (meal in mealList.meals()) {
-            panel.add(MealEditorPanel(meal, mealList), "growx 50")
+        for (meal in Globals.mealsList.meals()) {
+            panel.add(MealEditorPanel(meal), "growx 50")
         }
     }
 }

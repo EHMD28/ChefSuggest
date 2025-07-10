@@ -1,7 +1,7 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.core.Meal
-import chefsuggest.core.MealList
+import chefsuggest.ui.core.Globals
 import chefsuggest.utils.AppPaths
 import kotlinx.datetime.LocalDate
 import java.awt.BorderLayout
@@ -19,9 +19,9 @@ import kotlin.io.path.name
 data class TagsSelectionResult(val tags: List<String>?, val isCanceled: Boolean)
 
 object DialogUtilities {
-    fun selectTags(frame: Frame, allTags: List<String>, chosen: List<String>): TagsSelectionResult {
+    fun selectTags(frame: Frame, chosen: List<String>): TagsSelectionResult {
         val chosenTags: MutableList<String> = chosen.toMutableList()
-        val dialog = SelectTagsDialog(frame, allTags, chosenTags)
+        val dialog = SelectTagsDialog(frame, chosenTags)
         return TagsSelectionResult(
             tags = if (dialog.isCanceled) null else chosenTags,
             isCanceled = dialog.isCanceled
@@ -42,8 +42,8 @@ object DialogUtilities {
         }
     }
 
-    fun editTags(frame: Frame, mealList: MealList, meal: Meal) {
-        EditTagsDialog(frame, mealList.tags(), meal)
+    fun editTags(frame: Frame, meal: Meal) {
+        EditTagsDialog(frame, meal)
     }
 
     fun chooseDate(frame: Frame, defaultDate: LocalDate): LocalDate {
@@ -56,7 +56,7 @@ object DialogUtilities {
     }
 }
 
-private class SelectTagsDialog(frame: Frame, private val tags: List<String>, private val chosen: MutableList<String>) :
+private class SelectTagsDialog(frame: Frame, private val chosen: MutableList<String>) :
     JDialog(frame) {
     var isCanceled = false
     private val tagsContainer = tagsContainer()
@@ -76,7 +76,7 @@ private class SelectTagsDialog(frame: Frame, private val tags: List<String>, pri
     private fun tagsContainer(): JPanel {
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.PAGE_AXIS)
-        for (tag in this.tags) {
+        for (tag in Globals.mealsList.tags()) {
             val checkbox = JCheckBox(tag)
             checkbox.isFocusPainted = false
             checkbox.isSelected = tag in chosen
@@ -130,16 +130,13 @@ private var <T> JList<T>.selectedElements: List<T>
         this.selectedIndices = values.map { items.indexOf(it) }.toIntArray()
     }
 
-private class EditTagsDialog(frame: Frame, private val allTags: List<String>, private val meal: Meal) : JDialog(frame) {
+private class EditTagsDialog(frame: Frame, private val meal: Meal) : JDialog(frame) {
     private val saveExitPanel = saveExitPanel()
     private val tagsListModel = tagsListModel()
-
-    //    private val tagsListSelectionModel = tagsListSelectionModel()
     private val tagsList = tagsList()
     private val tagsScrollPane = tagsScrollPane()
     private val selectedTextField = selectedTextField()
     private val addRemovePanel = addRemovePanel()
-    private val editedTags = allTags.toMutableList()
 
     init {
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
@@ -195,6 +192,7 @@ private class EditTagsDialog(frame: Frame, private val allTags: List<String>, pr
     private fun tagsList(): JList<String> {
         val list = JList(tagsListModel)
         list.model = tagsListModel()
+        val allTags = Globals.mealsList.tags()
         allTags.forEach { (list.model as DefaultListModel<String>).addElement(it) }
         list.selectionModel = tagsListSelectionModel()
         list.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION

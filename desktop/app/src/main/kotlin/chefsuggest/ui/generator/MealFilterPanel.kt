@@ -1,13 +1,11 @@
 package chefsuggest.ui.generator
 
 import chefsuggest.core.Filter
-import chefsuggest.core.MealConfiguration
-import chefsuggest.core.MealList
 import chefsuggest.core.PrepTimeBucket
+import chefsuggest.ui.core.Globals
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
 import java.awt.Color
-import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.ItemEvent
@@ -15,34 +13,72 @@ import javax.swing.*
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 
-data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
-    // Getters and Setters
+data class MealFilterPanel(val index: Int) : JPanel() {
+    /* This is the best way I found to get BoxLayout to size correctly. */
     override fun getMaximumSize(): Dimension {
         return Dimension(
             this.parent.width,
             this.preferredSize.height
         )
     }
-    // Variables
-    val filter = Filter()
-    var mealName = ""
-    // Label
-    private val label = label()
-    private val labelContainer = labelContainer()
-    // Lock Button
-    private val lockButton = lockButton()
-    private val lockButtonContainer = lockButtonContainer()
-    // Tags Filter
-    private val tagsFilterButton = tagsFilterButton()
-    private val selectedTagsTextArea = selectedTagsTextArea()
-    private val tagsFilterContainer = tagsFilterContainer()
-    // Prep-Time Filter
-    private val prepTimeDropdown = prepTimeDropdown()
-    private val prepTimeFilterContainer = prepTimeFilterContainer()
-    // Last-Used Filter
-    private val lastUsedSpinner = lastUsedSpinner()
-    private val lastUsedFilterContainer = lastUsedFilterContainer()
-    // Container for filters.
+
+    val internalFilter = Filter()
+    var mealName
+        get() = labelContainer.label.text ?: ""
+        set(value) {
+            val text = value.ifEmpty { "Meal Name" }
+            labelContainer.label.text = "${index + 1}. $text"
+        }
+    var isLocked
+        get() = internalFilter.isLocked
+        set(value) {
+            internalFilter.isLocked = value
+            if (value) {
+                lockButtonContainer.button.isEnabled = true
+                tagsFilterContainer.button.isEnabled = false
+                prepTimeFilterContainer.dropDown.isEnabled = false
+                prepTimeFilterContainer.isEnabled = false
+            } else {
+                lockButtonContainer.button.isSelected = false
+                tagsFilterContainer.button.isEnabled = true
+                prepTimeFilterContainer.dropDown.isEnabled = true
+                prepTimeFilterContainer.isEnabled = true
+            }
+        }
+    var prepTime
+        get() = internalFilter.prepTime
+        set(value) {
+            this.internalFilter.prepTime = value
+            prepTimeFilterContainer.dropDown.selectedIndex = when (value) {
+                PrepTimeBucket.NONE -> 0
+                PrepTimeBucket.QUICK -> 1
+                PrepTimeBucket.MEDIUM -> 2
+                PrepTimeBucket.LONG -> 3
+            }
+        }
+    var lastUsed
+        get() = internalFilter.lastUsed
+        set(value) {
+            internalFilter.lastUsed = value
+            lastUsedFilterContainer.spinner.value = value
+        }
+    var filter
+        get() = this.internalFilter
+        set(value) {
+            setTagsLabel(value.tags)
+            this.prepTime = value.prepTime
+            this.lastUsed = value.lastUsed
+            this.isLocked = value.isLocked
+            this.revalidate()
+            this.parent.revalidate()
+            this.parent.repaint()
+        }
+
+    private val labelContainer = LabelContainer(this)
+    private val lockButtonContainer = LockButtonContainer(this)
+    private val tagsFilterContainer = TagsFilterContainer(this)
+    private val prepTimeFilterContainer = PrepTimeFilterContainer(this)
+    private val lastUsedFilterContainer = LastUsedFilterContainer(this)
     private val filtersContainer = filtersContainer()
 
     init {
@@ -57,61 +93,53 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         this.minimumSize = Dimension(100, 75)
     }
 
+    fun setTagsLabel(tags: List<String>) {
+        this.internalFilter.tags = tags
+        val text = if (tags.isEmpty()) "None" else tags.toString()
+        tagsFilterContainer.textArea.text = "Selected Tags: $text"
+        this.tagsFilterContainer.preferredSize = null
+    }
+
+    fun filtersContainer() : JPanel {
+        val panel = JPanel()
+        panel.isOpaque = false
+        panel.layout = FlowLayout(FlowLayout.LEADING, 20, 10)
+        panel.add(tagsFilterContainer)
+        panel.add(prepTimeFilterContainer)
+        panel.add(lastUsedFilterContainer)
+        return panel
+    }
+}
+
+private class LabelContainer(val panel: MealFilterPanel) : JPanel() {
+    val label = label()
+
+    init {
+        this.isOpaque = false
+        this.layout = BorderLayout()
+        this.add(label, BorderLayout.CENTER)
+    }
+
     private fun label() : JLabel {
-        val label = JLabel("${this.index + 1}. Meal Name")
+        val label = JLabel("${panel.index + 1}. Meal Name")
         label.font = Palette.getPrimaryFontWithSize(16)
         return label
     }
+}
 
-    private fun labelContainer() : JPanel {
-        val panel = JPanel()
-        panel.isOpaque = false
-        panel.layout = BorderLayout()
-        panel.add(label, BorderLayout.CENTER)
-        return panel
+private class LockButtonContainer(val panel: MealFilterPanel) : JPanel() {
+    val button = toggleButton()
+
+    init {
+        this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        this.isOpaque = false
+        button.alignmentX = CENTER_ALIGNMENT
+        this.add(Box.createVerticalGlue())
+        this.add(button)
+        this.add(Box.createVerticalGlue())
     }
 
-    private fun setFilterLock(isLocked: Boolean) {
-        this.filter.isLocked = isLocked
-        if (isLocked) {
-            this.lockButton.isSelected = true
-            this.tagsFilterButton.isEnabled = false
-            this.prepTimeDropdown.isEnabled = false
-            this.lastUsedSpinner.isEnabled = false
-        } else {
-            this.lockButton.isSelected = false
-            this.tagsFilterButton.isEnabled = true
-            this.prepTimeDropdown.isEnabled = true
-            this.lastUsedSpinner.isEnabled = true
-        }
-    }
-
-    private fun setTagsLabel(tags: List<String>) {
-        this.filter.tags = tags
-        val text = if (tags.isEmpty()) "None" else tags.toString()
-        this.selectedTagsTextArea.text = "Selected Tags: $text"
-        this.tagsFilterContainer.preferredSize = null
-//        this.revalidate()
-//        this.parent.revalidate()
-//        this.parent.repaint()
-    }
-
-    private fun setPrepTime(prepTime: PrepTimeBucket) {
-        this.filter.prepTime = prepTime
-        this.prepTimeDropdown.selectedIndex = when (prepTime) {
-            PrepTimeBucket.NONE -> 0
-            PrepTimeBucket.QUICK -> 1
-            PrepTimeBucket.MEDIUM -> 2
-            PrepTimeBucket.LONG -> 3
-        }
-    }
-
-    private fun setLastUsed(days: Int) {
-        this.filter.lastUsed = days
-        this.lastUsedSpinner.value = days
-    }
-
-    private fun lockButton() : JToggleButton {
+    private fun toggleButton() : JToggleButton {
         val button = JToggleButton()
         button.isFocusPainted = false
         button.preferredSize = Dimension(150, 40)
@@ -119,35 +147,37 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         button.addItemListener { event ->
             if (event.stateChange == ItemEvent.SELECTED) {
                 button.text = "Locked"
-                this.setFilterLock(true)
+                panel.isLocked = true
             } else if (event.stateChange == ItemEvent.DESELECTED) {
                 button.text = "Unlocked"
-                this.setFilterLock(false)
+                panel.isLocked = false
             }
         }
         return button
     }
+}
 
-    private fun lockButtonContainer() : JPanel {
-        val panel = JPanel()
-        panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-        panel.isOpaque = false
-        this.lockButton.alignmentX = Component.CENTER_ALIGNMENT
-        panel.add(Box.createVerticalGlue())
-        panel.add(this.lockButton)
-        panel.add(Box.createVerticalGlue())
-        return panel
+private class TagsFilterContainer(val panel: MealFilterPanel) : JPanel() {
+    val button = tagsFilterButton()
+    val textArea = selectedTagsTextArea()
+
+    init {
+        this.isOpaque = false
+        this.layout = BorderLayout()
+        this.add(button, BorderLayout.PAGE_START)
+        this.add(textArea, BorderLayout.PAGE_END)
+        this.preferredSize = Dimension(250, panel.preferredSize.height)
     }
 
     private fun tagsFilterButton() : JButton {
         val button = JButton("Edit Tags")
         button.isFocusPainted = false
-        val tags = mealList.tags()
+        val tags = Globals.mealsList.tags()
         button.addActionListener { _ ->
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
-            val result = DialogUtilities.selectTags(parent, tags, this.filter.tags)
+            val result = DialogUtilities.selectTags(parent, panel.internalFilter.tags)
             if (!result.isCanceled && result.tags != null) {
-                setTagsLabel(result.tags)
+                panel.setTagsLabel(result.tags)
                 this.revalidate()
                 this.parent.revalidate()
                 this.parent.repaint()
@@ -166,17 +196,19 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         textArea.border = EmptyBorder(10, 0, 0, 0)
         return textArea
     }
+}
 
-    private fun tagsFilterContainer() : JPanel {
-        val panel = JPanel()
-        panel.isOpaque = false
-        panel.layout = BorderLayout()
-        panel.add(this.tagsFilterButton, BorderLayout.PAGE_START)
-        panel.add(this.selectedTagsTextArea, BorderLayout.PAGE_END)
-        panel.preferredSize = Dimension(250, panel.preferredSize.height)
-        return panel
+private class PrepTimeFilterContainer(val panel: MealFilterPanel) : JPanel() {
+    val dropDown = prepTimeDropdown()
+
+    init {
+        this.isOpaque = false
+        this.layout = BorderLayout()
+        val label = JLabel("Prep Time Filter:")
+        this.add(label, BorderLayout.PAGE_START)
+        this.add(dropDown, BorderLayout.PAGE_END)
     }
-
+    
     private fun prepTimeDropdown() : JComboBox<String> {
         val options = arrayOf(
             "No Filter",
@@ -189,7 +221,7 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         dropdown.addActionListener { event ->
             val source = event.source as JComboBox<*>
             val selected = source.selectedItem as String
-            this.filter.prepTime = when (selected) {
+            panel.internalFilter.prepTime = when (selected) {
                 options[1] -> PrepTimeBucket.QUICK
                 options[2] -> PrepTimeBucket.MEDIUM
                 options[3] -> PrepTimeBucket.LONG
@@ -198,15 +230,17 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         }
         return dropdown
     }
+}
 
-    private fun prepTimeFilterContainer() : JPanel {
-        val panel = JPanel()
-        panel.isOpaque = false
-        panel.layout = BorderLayout()
-        val label = JLabel("Prep Time Filter:")
-        panel.add(label, BorderLayout.PAGE_START)
-        panel.add(this.prepTimeDropdown, BorderLayout.PAGE_END)
-        return panel
+private class LastUsedFilterContainer(val panel: MealFilterPanel) : JPanel() {
+    val spinner = lastUsedSpinner()
+
+    init {
+        this.isOpaque = false
+        this.layout = BorderLayout()
+        val label = JLabel("Days Since Last Used: ")
+        this.add(label, BorderLayout.PAGE_START)
+        this.add(spinner, BorderLayout.PAGE_END)
     }
 
     private fun lastUsedSpinner() : JSpinner {
@@ -218,47 +252,11 @@ data class MealFilterPanel(val index: Int, val mealList: MealList) : JPanel() {
         val spinner = JSpinner(spinnerModel)
         spinner.addChangeListener {
             spinner.commitEdit()
-            this.filter.lastUsed = spinner.value as Int
+            panel.internalFilter.lastUsed = spinner.value as Int
         }
         val spinnerEditor = spinner.editor as JSpinner.DefaultEditor
         spinnerEditor.textField.preferredSize = Dimension(50, 20)
         spinnerEditor.size = Dimension(50, 20)
         return spinner
-    }
-
-    private fun lastUsedFilterContainer() : JPanel {
-        val panel = JPanel()
-        panel.isOpaque = false
-        panel.layout = BorderLayout()
-        val label = JLabel("Days Since Last Used: ")
-        panel.add(label, BorderLayout.PAGE_START)
-        panel.add(this.lastUsedSpinner, BorderLayout.PAGE_END)
-        return panel
-    }
-
-    private fun filtersContainer() : JPanel {
-        val panel = JPanel()
-        panel.isOpaque = false
-        panel.layout = FlowLayout(FlowLayout.LEADING, 20, 10)
-        panel.add(tagsFilterContainer)
-//        panel.add(ingredientsFilter)
-        panel.add(prepTimeFilterContainer)
-        panel.add(lastUsedFilterContainer)
-        return panel
-    }
-
-    fun setMealNameTo(mealName: String) {
-        this.mealName = mealName.ifEmpty { "Meal Name" }
-        this.label.text = "${index + 1}. $mealName"
-    }
-
-    fun setFilterTo(f: Filter) {
-        setTagsLabel(f.tags)
-        setPrepTime(f.prepTime)
-        setLastUsed(f.lastUsed)
-        setFilterLock(f.isLocked)
-        this.revalidate()
-        this.parent.revalidate()
-        this.parent.repaint()
     }
 }

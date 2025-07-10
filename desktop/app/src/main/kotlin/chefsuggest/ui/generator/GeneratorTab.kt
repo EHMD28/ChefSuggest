@@ -15,13 +15,12 @@ import kotlin.io.path.Path
 
 
 class GeneratorTab : JPanel() {
-    private val mealList = MealList.fromTsv(Path("app/src/test/kotlin/chefsuggest/resources/LoadTest/TestMeals.tsv"))
     private val listOfMealsPanel = listOfMealsPanel()
     private val internalPanel = listOfMealsPanel.viewport.view as JPanel
-    private val spinnerContainer = NumMealsSpinnerContainer(internalPanel, mealList)
+    private val spinnerContainer = NumMealsSpinnerContainer(internalPanel)
     private val saveMealsButton = SaveMealsButton(internalPanel)
-    private val loadMealsButton = LoadMealsButton(internalPanel, mealList, spinnerContainer.spinner)
-    private val generateMealsButton = GenerateMealsButton(internalPanel, mealList)
+    private val loadMealsButton = LoadMealsButton(internalPanel, spinnerContainer.spinner)
+    private val generateMealsButton = GenerateMealsButton(internalPanel)
     private val controlsPanel = controlsPanel()
 
     init {

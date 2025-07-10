@@ -11,7 +11,7 @@
 
 ## Editor
 - [X] View meals
-- [ ] Edit meals
+- [X] Edit meals
   - [X] Name
   - [X] Tags
   - [X] Prep Time
