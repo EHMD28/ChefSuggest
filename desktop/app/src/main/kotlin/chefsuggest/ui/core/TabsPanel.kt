@@ -16,7 +16,6 @@ class TabsPanel : JPanel() {
         val tabbedPane = JTabbedPane()
         tabbedPane.addTab("Meal Generator", generatorPanel)
         tabbedPane.addTab("Meal Editor", editorPanel)
-        tabbedPane.selectedIndex = 1
         tabbedPane.background = Palette.SECONDARY_BG
         tabbedPane.font = Palette.getPrimaryFontWithSize(18)
         tabbedPane.foreground = Color.BLACK

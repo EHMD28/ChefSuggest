@@ -42,10 +42,10 @@ class MealEditorPanel(val meal: Meal) : JPanel() {
     }
 
     private fun nameField() : JTextArea {
-        // TODO: JTextField -> JTextArea to support longer names.
         val rows = 1
         val columns = 10
         val textArea = JTextArea(meal.name, rows, columns)
+        textArea.isOpaque = false
         textArea.lineWrap = true
         textArea.wrapStyleWord = true
         textArea.addKeyListener(object : KeyAdapter() {

@@ -2,7 +2,6 @@ package chefsuggest.ui.generator
 
 import chefsuggest.core.Filter
 import chefsuggest.core.PrepTimeBucket
-import chefsuggest.ui.core.Globals
 import chefsuggest.utils.Palette
 import java.awt.BorderLayout
 import java.awt.Color
@@ -166,13 +165,12 @@ private class TagsFilterContainer(val panel: MealFilterPanel) : JPanel() {
         this.layout = BorderLayout()
         this.add(button, BorderLayout.PAGE_START)
         this.add(textArea, BorderLayout.PAGE_END)
-        this.preferredSize = Dimension(250, panel.preferredSize.height)
+        this.preferredSize = Dimension(250, this.preferredSize.height)
     }
 
     private fun tagsFilterButton() : JButton {
         val button = JButton("Edit Tags")
         button.isFocusPainted = false
-        val tags = Globals.mealsList.tags()
         button.addActionListener { _ ->
             val parent = SwingUtilities.getWindowAncestor(this) as JFrame
             val result = DialogUtilities.selectTags(parent, panel.internalFilter.tags)
