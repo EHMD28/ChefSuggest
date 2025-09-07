@@ -37,3 +37,4 @@ build
 
 # Tests
 app/src/test/kotlin/chefsuggest/resources/TestTwo
+temp/

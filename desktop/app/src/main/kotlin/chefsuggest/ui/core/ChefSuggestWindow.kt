@@ -16,6 +16,7 @@ object ChefSuggestWindow : JFrame() {
         this.contentPane.background = Palette.PRIMARY_BG
         this.add(TabsPanel(), BorderLayout.CENTER)
         this.pack()
+        this.isResizable = false
     }
 }
 
