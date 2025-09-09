@@ -24,14 +24,13 @@
 - [ ] Sync meals with remote database (Firebase)
 
 ## Miscellaneous
-- [ ] Remove debugging (background colors, println, etc.)
-- [ ] Remove unnecessary code (such as revalidate/repaint and preferred sizes) 
-- [ ] Remove TODOs
+- [X] Remove debugging (background colors, println, etc.)
+- [X] Remove unnecessary code (such as revalidate/repaint and preferred sizes) 
+- [X] Remove TODO comments
 - [ ] Try out different looks and feels
 - [ ] Update UI on window resize (or disable resizing)
 - [ ] Check UI on Windows
 - [ ] Clean up code
-  - [ ] Refractor long blocks into functions
-  - [ ] Move all major UI components into individual classes
-  - [ ] Create object instances for global variable variables
-
+  - [ ] Refactor long blocks into functions
+  - [X] Move all major UI components into individual classes
+  - [X] Create object instances for global variable variables

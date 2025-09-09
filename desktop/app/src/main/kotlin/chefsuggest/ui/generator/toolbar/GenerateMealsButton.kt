@@ -27,11 +27,9 @@ class GenerateMealsButton(mealFiltersPanel: JPanel) : JButton() {
                     val meal = filteredMeals.getRandomMeal(chosenNames)
                     if ((meal == null) || filteredMeals.isEmpty) {
                         panel.mealName = "No Meal Found"
-                        println("No Meal found for #${index+1}")
                     } else {
                         chosenNames.add(meal.name)
                         panel.mealName = meal.name
-                        println("Set meal #${index+1} to ${meal.name}")
                     }
                 }
             }

@@ -5,6 +5,7 @@ import chefsuggest.ui.generator.toolbar.GenerateMealsButton
 import chefsuggest.ui.generator.toolbar.LoadMealsButton
 import chefsuggest.ui.generator.toolbar.NumMealsSpinnerContainer
 import chefsuggest.ui.generator.toolbar.SaveMealsButton
+import chefsuggest.ui.generator.toolbar.SimplifiedViewButton
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -21,6 +22,7 @@ class GeneratorTab : JPanel() {
     private val saveMealsButton = SaveMealsButton(internalPanel)
     private val loadMealsButton = LoadMealsButton(internalPanel, spinnerContainer.spinner)
     private val generateMealsButton = GenerateMealsButton(internalPanel)
+    private val viewMealsButton = SimplifiedViewButton(internalPanel)
     private val controlsPanel = controlsPanel()
 
     init {
@@ -38,6 +40,7 @@ class GeneratorTab : JPanel() {
         buttonsContainer.add(this.saveMealsButton)
         buttonsContainer.add(this.loadMealsButton)
         buttonsContainer.add(this.generateMealsButton)
+        buttonsContainer.add(this.viewMealsButton)
         panel.add(buttonsContainer, BorderLayout.EAST)
         return panel
     }
