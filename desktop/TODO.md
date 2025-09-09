@@ -8,6 +8,8 @@
     - [X] Load saved list of meals/filters
     - [X] Update last used
 - [X] Store meals as TSV instead of JSON
+- [ ] Edge Cases
+  - [ ] Empty lists (no meals)
 
 ## Editor
 - [X] View meals
@@ -15,9 +17,9 @@
   - [X] Name
   - [X] Tags
   - [X] Prep Time
-  - [X] *Last Used*
+  - [X] Last Used
   - [X] New
-  - [X] *Delete*
+  - [X] Delete
 - [X] Editor toolbar
   - [X] Load meals
   - [X] Save meals
@@ -29,7 +31,7 @@
 - [X] Remove TODO comments
 - [ ] Try out different looks and feels
 - [ ] Update UI on window resize (or disable resizing)
-- [ ] Check UI on Windows
+- [ ] **Check UI on Windows**
 - [ ] Clean up code
   - [ ] Refactor long blocks into functions
   - [X] Move all major UI components into individual classes
