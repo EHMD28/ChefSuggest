@@ -17,7 +17,8 @@ object AppPaths {
      */
     fun getBasePath() : Path {
         val home = System.getProperty("user.home")
-        return Path("$home/.ChefSuggest")
+        // return Path("$home/.ChefSuggest")
+        return Path(home).resolve(".ChefSuggest")
     }
 
     /**
