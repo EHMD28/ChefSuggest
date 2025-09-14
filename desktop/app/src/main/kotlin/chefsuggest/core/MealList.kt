@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit
 
 class MealList private constructor() {
     private val internalList = mutableListOf<Meal>()
+
     /* A list containing the names of all the meals in this MealList. */
     private val mealNames
         get() = this.internalList.map { it.name }.sorted()
@@ -36,9 +37,9 @@ class MealList private constructor() {
             val meals = df.map { row ->
                 Meal(
                     name = row["name"] as String,
-                    tags = (row["tags"] as String).split(","),
-                    prepTime = row["prepTime"] as Int,
-                    lastUsed = row["lastUsed"] as LocalDate
+                    tags = row["tags"]?.toString()?.split(",") ?: emptyList(),
+                    prepTime = (row["prepTime"] as? Int) ?: 30,
+                    lastUsed = (row["lastUsed"] as? LocalDate) ?: LocalDate(2025, 1, 1)
                 )
             }
             val mealList = fromMeals(meals.sortedBy { it.name })
@@ -50,25 +51,27 @@ class MealList private constructor() {
 
     fun writeToTsv(path: Path) {
         val mealRows =
-            this.internalList.map { meal -> MealRow(
-                name = meal.name,
-                tags = meal.tags.joinToString(","),
-                prepTime = meal.prepTime,
-                lastUsed = meal.lastUsed
-            ) }
+            this.internalList.map { meal ->
+                MealRow(
+                    name = meal.name,
+                    tags = meal.tags.joinToString(","),
+                    prepTime = meal.prepTime,
+                    lastUsed = meal.lastUsed
+                )
+            }
         val df = mealRows.toDataFrame()
         df.writeTsv(path)
     }
 
-    fun meals() : List<Meal> {
+    fun meals(): List<Meal> {
         return this.internalList
     }
 
-    fun size() : Int {
+    fun size(): Int {
         return this.internalList.size
     }
 
-    fun tags() : List<String> {
+    fun tags(): List<String> {
         return this.internalList.map { it.tags }.flatten().distinct().sorted()
     }
 
@@ -84,7 +87,7 @@ class MealList private constructor() {
      * Returns a randomly chosen meal with a name that is not in except parameter. Returns null
      * if no meal is found
      */
-    fun getRandomMeal(except: List<String>) : Meal? {
+    fun getRandomMeal(except: List<String>): Meal? {
         // If all meals are the same, it is impossible to pick a unique one.
         if (this.mealNames == except.sorted()) return null
         if (this.internalList.isEmpty()) return null
@@ -109,7 +112,7 @@ class MealList private constructor() {
         this.internalList.removeIf { it.name == meal.name }
     }
 
-    fun applyFilter(filter: Filter) : MealList {
+    fun applyFilter(filter: Filter): MealList {
         val filtered = this.internalList.filter { meal ->
             val cond1 = filter.tags.isEmpty() || meal.tags.any { it in filter.tags }
             val cond2 = when (filter.prepTime) {

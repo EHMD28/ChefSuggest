@@ -36,12 +36,12 @@ data class MealFilterPanel(val index: Int) : JPanel() {
                 lockButtonContainer.button.isEnabled = true
                 tagsFilterContainer.button.isEnabled = false
                 prepTimeFilterContainer.dropDown.isEnabled = false
-                prepTimeFilterContainer.isEnabled = false
+                lastUsedFilterContainer.spinner.isEnabled = false
             } else {
                 lockButtonContainer.button.isSelected = false
                 tagsFilterContainer.button.isEnabled = true
                 prepTimeFilterContainer.dropDown.isEnabled = true
-                prepTimeFilterContainer.isEnabled = true
+                lastUsedFilterContainer.spinner.isEnabled = true
             }
         }
     var prepTime
