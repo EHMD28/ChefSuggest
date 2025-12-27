@@ -1,4 +1,4 @@
-rootProject.name = "Multiplatform"
+rootProject.name = "ChefSuggest"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
