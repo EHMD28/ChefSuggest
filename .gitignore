@@ -30,6 +30,7 @@ replay_pid*
 .vscode/
 .idea/
 scratch.*
+*.txt
 
 # Application Data
 ChefSuggestData/
