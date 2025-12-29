@@ -4,42 +4,55 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-android {
-    namespace = "io.github.ehmd28.android"
-    compileSdk {
-        version = release(36)
-    }
+kotlin {
+    jvmToolchain(18)
 
-    defaultConfig {
-        applicationId = "io.github.ehmd28.android"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+    android {
+        namespace = "io.github.ehmd28.android"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        defaultConfig {
+            minSdk = libs.versions.android.minSdk.get().toInt()
+            targetSdk = libs.versions.android.targetSdk.get().toInt()
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-//    kotlinOptions {
-//        jvmTarget = 11
-//    }
-    buildFeatures {
-        compose = true
-    }
 }
+
+//android {
+//    namespace = "io.github.ehmd28.android"
+//    compileSdk {
+//        version = release(36)
+//    }
+//
+//    defaultConfig {
+//        applicationId = "io.github.ehmd28.android"
+//        minSdk = 24
+//        targetSdk = 36
+//        versionCode = 1
+//        versionName = "1.0"
+//
+//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+//    }
+//
+//    buildTypes {
+//        release {
+//            isMinifyEnabled = false
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
+//    }
+//
+//    compileOptions {
+//        sourceCompatibility = JavaVersion.VERSION_18
+//        targetCompatibility = JavaVersion.VERSION_18
+//    }
+//
+//    buildFeatures {
+//        compose = true
+//    }
+//}
 
 dependencies {
     implementation(libs.androidx.core.ktx)
