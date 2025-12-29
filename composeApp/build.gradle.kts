@@ -1,24 +1,23 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
-    jvmToolchain(18)
-
-    android {
-        namespace = "com.example.chefsuggest"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
-
+    
     jvm()
-
+    
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -44,17 +43,44 @@ kotlin {
     }
 }
 
+android {
+    namespace = "io.github.ehmd28.chefsuggest"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        applicationId = "io.github.ehmd28.chefsuggest"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = "1.0"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
 dependencies {
-    androidRuntimeClasspath(libs.androidx.compose.ui.tooling)
+    debugImplementation(compose.uiTooling)
 }
 
 compose.desktop {
     application {
-        mainClass = "com.example.multiplatform.MainKt"
+        mainClass = "io.github.ehmd28.chefsuggest.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.example.multiplatform"
+            packageName = "io.github.ehmd28.chefsuggest"
             packageVersion = "1.0.0"
         }
     }
