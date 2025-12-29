@@ -1,4 +1,4 @@
-package com.example.multiplatform
+package io.github.ehmd28.chefsuggest.chefsuggest
 
 class Greeting {
     private val platform = getPlatform()

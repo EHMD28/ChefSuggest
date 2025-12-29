@@ -1,4 +1,6 @@
-package com.example.multiplatform
+package com.example.chefsuggest
+
+import io.github.ehmd28.chefsuggest.chefsuggest.Platform
 
 class JVMPlatform: Platform {
     override val name: String = "Java ${System.getProperty("java.version")}"

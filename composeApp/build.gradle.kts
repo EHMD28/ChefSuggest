@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -13,19 +12,10 @@ kotlin {
     jvmToolchain(18)
 
     android {
-        namespace = "com.example.multiplatform"
+        namespace = "com.example.chefsuggest"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
-
-//    @Suppress("UnstableApiUsage")
-//    androidLibrary {
-//        namespace = "com.example.multiplatform"
-//        compileSdk = libs.versions.android.compileSdk.get().toInt()
-//        minSdk = libs.versions.android.minSdk.get().toInt()
-//
-//        withJava()
-//    }
 
     jvm()
 
@@ -54,19 +44,8 @@ kotlin {
     }
 }
 
-//android {
-//    namespace = "com.example.multiplatform"
-//    compileSdk = libs.versions.android.compileSdk.get().toInt()
-//    minSdk = libs.versions.android.minSdk.get().toInt()
-//
-//    compileOptions {
-//        sourceCompatibility = JavaVersion.VERSION_18
-//        targetCompatibility = JavaVersion.VERSION_18
-//    }
-//}
-
 dependencies {
-    "androidRuntimeClasspath"(compose.uiTooling)
+    androidRuntimeClasspath(libs.androidx.compose.ui.tooling)
 }
 
 compose.desktop {

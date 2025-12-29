@@ -1,4 +1,4 @@
-package com.example.multiplatform
+package io.github.ehmd28.chefsuggest.chefsuggest
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
