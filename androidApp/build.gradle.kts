@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
+//    alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -10,6 +11,12 @@ kotlin {
     android {
         namespace = "io.github.ehmd28.android"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+//        sourceSets {
+//            getByName("main") {
+//                res.srcDir("composeResources/chefsuggest/shared/generated/resources")
+//            }
+//        }
 
         defaultConfig {
             minSdk = libs.versions.android.minSdk.get().toInt()

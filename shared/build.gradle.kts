@@ -12,6 +12,10 @@ plugins {
 kotlin {
     jvmToolchain(18)
 
+    androidLibrary {
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+    }
+
     android {
         namespace = "io.github.ehmd28.chefsuggest"
         compileSdk = libs.versions.android.compileSdk.get().toInt()

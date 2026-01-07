@@ -19,6 +19,7 @@ lifecycleRuntimeKtx = "2.6.1"
 composeBom = "2024.09.00"
 
 [libraries]
+components-resources-android = { module = "org.jetbrains.compose.components:components-resources-android", version.ref = "composeMultiplatform" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
