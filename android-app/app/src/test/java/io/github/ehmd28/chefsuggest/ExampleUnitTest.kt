@@ -1,4 +1,4 @@
-package com.example.chefsuggest
+package io.github.ehmd28.chefsuggest
 
 import org.junit.Test
 

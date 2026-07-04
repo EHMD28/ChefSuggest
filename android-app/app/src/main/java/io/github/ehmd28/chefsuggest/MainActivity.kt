@@ -1,20 +1,17 @@
-package com.example.chefsuggest
+package io.github.ehmd28.chefsuggest
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import com.example.chefsuggest.ui.theme.ChefSuggestTheme
+import io.github.ehmd28.chefsuggest.ui.theme.ChefSuggestTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +20,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChefSuggestTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    App(
+                    Greeting(
+                        name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -33,19 +31,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello!",
-        color = MaterialTheme.colorScheme.onPrimary,
-        fontSize = 32.sp,
-        modifier = modifier.background(MaterialTheme.colorScheme.primary)
+        text = "Hello $name!",
+        modifier = modifier
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AppPreview() {
+fun GreetingPreview() {
     ChefSuggestTheme {
-        App()
+        Greeting("Android")
     }
 }
