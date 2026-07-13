@@ -2,8 +2,9 @@ package io.github.ehmd28.chefsuggest
 
 data class MealCardData(
     val name: String,
-    val isLocked: Boolean = false
+    var isLocked: Boolean = false
 )
+
 
 ///**
 // * Fetches the list of meals from a statically hosted Google Sheets file.

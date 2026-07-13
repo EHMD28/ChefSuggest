@@ -25,7 +25,7 @@ class ChefSuggestViewModel : ViewModel() {
     val uiState = internalState.asStateFlow()
 
     init {
-        updatedAllMealsList()
+        updateAllMealsFromRemote()
         updateNumMeals(GeneratorConstants.DEFAULT_NUM_MEALS)
     }
 
@@ -34,11 +34,39 @@ class ChefSuggestViewModel : ViewModel() {
      *
      * TODO: Implement HTTP fetch
      */
-    fun updatedAllMealsList() {
+    fun updateAllMealsFromRemote() {
         val mealNames = listOf(
-            "Macaroni and Cheese",
-            "Chocolate Cake",
-            "BBQ Chicken"
+            "Cheeseburger Macaroni and Vegetable",
+            "Cheeseburger Sliders and Fries",
+            "Chicken Noodle Soup and Bread",
+            "Chicken or Beef Gyros",
+            "Chicken Spaghetti (Recipe: The Pioneer Woman)",
+            "Chicken Wings, Macaroni & Cheese, and Vegetable",
+            "Chicken, Chicken Rice, and Vegetables",
+            "Chicken, Corn Pudding, Collard Greens",
+            "Chili Cheese Dogs/Fries",
+            "Fettuccine Alfredo",
+            "Fried Chicken Sandwiches & Fries",
+            "Fried Rice (shrimp or chicken)",
+            "Grilled Cheese and Tomato Soup",
+            "Grilled Cheese Stuffed Burritos",
+            "Homemade Breakfast for Dinner",
+            "Homemade Pizza and Fries",
+            "Homemade Rice Bowls",
+            "Hot Dogs and Beans",
+            "Jollof Chicken and Rice",
+            "Lasagna and Vegetable",
+            "Lo Mein (shrimp or chicken)",
+            "Meatball Subs",
+            "Meatloaf, Mashed Potatoes, and Vegetable",
+            "Philly Cheesesteak Sloppy Joes",
+            "Quesadillas",
+            "Shredded BBQ Chicken and Macaroni and Cheese",
+            "Spaghetti with Meat Sauce and a Vegetable",
+            "Steak, Baked Potatoes, and Corn",
+            "Tacos",
+            "Tater Tot Casserole",
+            "Turkey Burgers/Fries",
         )
         internalState.update { currentState ->
             currentState.copy(
@@ -58,7 +86,39 @@ class ChefSuggestViewModel : ViewModel() {
         }
     }
 
+    fun toggleLockAtIndex(idx: Int) {
+        internalState.update { currentState ->
+            val meals = currentState.selectedMeals.toMutableList()
+            val meal = meals[idx]
+            if (meal != null) {
+                meals[idx] = meal.copy(isLocked = !meal.isLocked)
+            }
+            currentState.copy(
+                selectedMeals = meals
+            )
+        }
+    }
+
     fun generateMeals() {
-        TODO()
+        val selected = internalState.value.selectedMeals.toMutableList()
+        val selectedMealNames = selected.map { it?.name ?: "" }
+        val allMeals = internalState.value.allMeals
+        val mealNames = allMeals.filter { !selectedMealNames.contains(it) }.shuffled()
+        var mealNamesIndex = 0
+        for ((index, mealData) in selected.withIndex()) {
+            val mealName = mealNames.getOrElse(mealNamesIndex) { "No Meal Found" }
+            if (mealData == null) {
+                selected[index] = MealCardData(mealName)
+                mealNamesIndex++
+            } else if (!mealData.isLocked) {
+                selected[index] = mealData.copy(name = mealName)
+                mealNamesIndex++
+            }
+        }
+        internalState.update { currentState ->
+            currentState.copy(
+                selectedMeals = selected
+            )
+        }
     }
 }

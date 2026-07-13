@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,7 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,17 +88,20 @@ fun HomeScreen(
             updateNumMealsFun = { n -> appViewModel.updateNumMeals(n) }
         )
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
-        GenerateMealsButton(modifier = Modifier.align(Alignment.CenterHorizontally))
+        GenerateMealsButton(
+            onClick = { appViewModel.generateMeals() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         ActionIcons()
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
-        MealsList(uiState.selectedMeals)
+        MealsList(uiState.selectedMeals, toggleLockAtIndex = { appViewModel.toggleLockAtIndex(it) })
     }
 }
 
 @Composable
-fun GenerateMealsButton(modifier: Modifier = Modifier) {
+fun GenerateMealsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        onClick = { },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = modifier
     ) {
@@ -158,6 +166,7 @@ fun NumMealsSelector(updateNumMealsFun: (Int) -> Unit, modifier: Modifier = Modi
 
 @Composable
 private fun NumMealsSelectorTextField(numMeals: Int, updateNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         label = { Text("Number of Meals to Generate") },
         value = numMeals.toString(),
@@ -169,7 +178,10 @@ private fun NumMealsSelectorTextField(numMeals: Int, updateNumMealsFn: (Int) -> 
             }
             catch (_: NumberFormatException) { }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            focusManager.clearFocus()
+        }),
         singleLine = true,
         modifier = modifier
     )
@@ -204,10 +216,10 @@ private fun NumMealsSelectorIncrementButton(numMeals: Int, updatedNumMealsFn: (I
 }
 
 @Composable
-fun MealsList(meals: List<MealCardData?>, modifier: Modifier = Modifier) {
+fun MealsList(meals: List<MealCardData?>, modifier: Modifier = Modifier, toggleLockAtIndex: (Int) -> Unit) {
     LazyColumn(verticalArrangement = spacedBy(Spacing.spaceMedium), modifier = modifier) {
         itemsIndexed(meals) { index, meal ->
-            MealCard(index, meal = meal)
+            MealCard(index, meal = meal, toggleLockAtIndex = toggleLockAtIndex)
         }
     }
 }
@@ -215,8 +227,10 @@ fun MealsList(meals: List<MealCardData?>, modifier: Modifier = Modifier) {
 @Composable
 fun MealCard(
     index: Int,
+    toggleLockAtIndex: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    meal: MealCardData? = null) {
+    meal: MealCardData? = null
+) {
     val mealName = meal?.name ?: "Meal Name"
     val isMealLocked = meal?.isLocked ?: false
     Card(modifier = modifier.background(color = MaterialTheme.colorScheme.surface)) {
@@ -228,12 +242,13 @@ fun MealCard(
                 .padding(Spacing.spaceSmall)
                 .fillMaxWidth()
         ) {
-            Text(
-                "${index + 1}. $mealName",
-                color = if (isMealLocked) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(3f)
-            )
-            IconButton(onClick = { }) {
+            Row(modifier = Modifier.weight(3f).horizontalScroll(rememberScrollState())) {
+                Text(
+                    "${index + 1}. $mealName",
+                    color = if (isMealLocked) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+                )
+            }
+            IconButton(onClick = { toggleLockAtIndex(index) }) {
                 Icon(
                     painter = painterResource(if (isMealLocked) R.drawable.lock_closed_icon else R.drawable.lock_open_icon),
                     contentDescription = "Locked icon."
@@ -256,6 +271,6 @@ fun NumMealsSelectorPreview() {
 fun MealCardPreview() {
     MealCard(
         index = 0,
-        meal = null
+        toggleLockAtIndex = { }
     )
 }
