@@ -6,16 +6,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class ChefSuggestUiState(
-    val mealsList: List<Meal> = emptyList(),
-    var selectedMeals: List<Meal> = emptyList()
-)
+    /**
+     * The list of all possible meal names the generator can choose from.
+     */
+    val allMeals: List<String> = emptyList(),
+    /**
+     * The list of meal cards being currently displayed by the user interface. `null` means a meal
+     * slot that hasn't been filled yet.
+     */
+    var selectedMeals: MutableList<MealCardData?> = mutableListOf()
+) {
+    val numSelectedMeals: Int
+        get() = this.selectedMeals.size
+}
 
 class ChefSuggestViewModel : ViewModel() {
     private val internalState = MutableStateFlow(ChefSuggestUiState())
     val uiState = internalState.asStateFlow()
 
     init {
-        updateMeals()
+        updatedAllMealsList()
+        updateNumMeals(GeneratorConstants.DEFAULT_NUM_MEALS)
     }
 
     /**
@@ -23,24 +34,31 @@ class ChefSuggestViewModel : ViewModel() {
      *
      * TODO: Implement HTTP fetch
      */
-    fun updateMeals() {
-        val mealList = listOf(
-            Meal("Macaroni and Cheese", "https://www.southernliving.com/recipes/best-ever-macaroni-and-cheese-recipe"),
-            Meal("Chocolate Cake"),
-            Meal("BBQ Chicken", "https://www.simplyrecipes.com/recipes/barbecued_chicken_on_the_grill/")
+    fun updatedAllMealsList() {
+        val mealNames = listOf(
+            "Macaroni and Cheese",
+            "Chocolate Cake",
+            "BBQ Chicken"
         )
         internalState.update { currentState ->
             currentState.copy(
-                mealsList = mealList
+                allMeals = mealNames
             )
         }
     }
 
-    fun setSelectedMeals(meals: List<Meal>) {
+    fun updateNumMeals(n: Int) {
+        val selected = internalState.value.selectedMeals.toMutableList()
+        while (selected.size < n) { selected.add(null) }
+        while (selected.size > n) { selected.removeAt(selected.lastIndex) }
         internalState.update { currentState ->
             currentState.copy(
-                selectedMeals = meals
+                selectedMeals = selected
             )
         }
+    }
+
+    fun generateMeals() {
+        TODO()
     }
 }

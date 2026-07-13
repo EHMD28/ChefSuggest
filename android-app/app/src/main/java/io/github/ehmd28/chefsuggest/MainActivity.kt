@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -41,11 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.ehmd28.chefsuggest.ui.layout.Spacing
 import io.github.ehmd28.chefsuggest.ui.theme.ChefSuggestTheme
+import kotlin.math.max
+import kotlin.math.min
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -82,27 +80,15 @@ fun HomeScreen(
     Column(modifier = modifier.padding(horizontal = Spacing.spaceMedium)) {
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
         NumMealsSelector(
-            updateNumMealsCallback = { }
+            updateNumMealsFun = { n -> appViewModel.updateNumMeals(n) }
         )
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
         GenerateMealsButton(modifier = Modifier.align(Alignment.CenterHorizontally))
         ActionIcons()
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
-        MealsList(uiState.mealsList)
+        MealsList(uiState.selectedMeals)
     }
 }
-
-//@Composable
-//private fun AppTitle() {
-//    Text(
-//        text = "Chef Suggest",
-//        color = MaterialTheme.colorScheme.primary,
-//        style = MaterialTheme.typography.titleLarge,
-//        textAlign = TextAlign.Center,
-//        modifier = Modifier.fillMaxWidth()
-//    )
-//}
-
 
 @Composable
 fun GenerateMealsButton(modifier: Modifier = Modifier) {
@@ -150,57 +136,89 @@ fun ActionIcons(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NumMealsSelector(updateNumMealsCallback: (Int) -> Unit, modifier: Modifier = Modifier) {
-    var numMeals by remember { mutableIntStateOf(5) }
+fun NumMealsSelector(updateNumMealsFun: (Int) -> Unit, modifier: Modifier = Modifier) {
+    var numMeals by remember { mutableIntStateOf(GeneratorConstants.DEFAULT_NUM_MEALS) }
+
+    fun internalUpdateNumMeals(n: Int) {
+        numMeals = n
+        updateNumMealsFun(numMeals)
+    }
+
     Row (verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = modifier
             .fillMaxWidth()
     ) {
-        IconButton(onClick = { numMeals-- }, modifier = Modifier.weight(1f)) {
-            Icon(
-                painter = painterResource(R.drawable.remove_icon),
-                contentDescription = "Decrease the number of meals.",
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-        OutlinedTextField(
-            label = { Text("Number of Meals to Generate") },
-            value = numMeals.toString(),
-            onValueChange = { value ->
-                try {
-                    numMeals = value.toInt()
-                    updateNumMealsCallback(numMeals)
-                } catch (e: NumberFormatException) {
-                    updateNumMealsCallback(0)
-                }
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            modifier = Modifier.weight(3f)
-        )
-        IconButton(onClick = { numMeals++  }) {
-            Icon(
-                painter = painterResource(R.drawable.add_icon),
-                contentDescription = "Increase the number of meals",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1f)
-            )
-        }
+
+        NumMealsSelectorDecrementButton(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(1f))
+        NumMealsSelectorTextField(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(3f))
+        NumMealsSelectorIncrementButton(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun MealsList(meals: List<Meal>, modifier: Modifier = Modifier) {
+private fun NumMealsSelectorTextField(numMeals: Int, updateNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+    OutlinedTextField(
+        label = { Text("Number of Meals to Generate") },
+        value = numMeals.toString(),
+        onValueChange = { value ->
+            try {
+                var valueAsInt = if (value.isEmpty()) GeneratorConstants.MIN_NUM_MEALS else value.toInt()
+                valueAsInt = max(min(valueAsInt, GeneratorConstants.MAX_NUM_MEALS), GeneratorConstants.MIN_NUM_MEALS)
+                updateNumMealsFn(valueAsInt)
+            }
+            catch (_: NumberFormatException) { }
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun NumMealsSelectorDecrementButton(numMeals: Int, updatedNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = {
+        val n = max(numMeals - 1, GeneratorConstants.MIN_NUM_MEALS)
+        updatedNumMealsFn(n)
+    }, modifier = modifier) {
+        Icon(
+            painter = painterResource(R.drawable.remove_icon),
+            contentDescription = "Decrease the number of meals.",
+            tint = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+private fun NumMealsSelectorIncrementButton(numMeals: Int, updatedNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = {
+        val n = min(numMeals + 1, GeneratorConstants.MAX_NUM_MEALS)
+        updatedNumMealsFn(n)
+    }, modifier = modifier) {
+        Icon(
+            painter = painterResource(R.drawable.add_icon),
+            contentDescription = "Increase the number of meals",
+            tint = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+fun MealsList(meals: List<MealCardData?>, modifier: Modifier = Modifier) {
     LazyColumn(verticalArrangement = spacedBy(Spacing.spaceMedium), modifier = modifier) {
         itemsIndexed(meals) { index, meal ->
-            MealCard(index, meal)
+            MealCard(index, meal = meal)
         }
     }
 }
 
 @Composable
-fun MealCard(index: Int, meal: Meal, modifier: Modifier = Modifier) {
+fun MealCard(
+    index: Int,
+    modifier: Modifier = Modifier,
+    meal: MealCardData? = null) {
+    val mealName = meal?.name ?: "Meal Name"
+    val isMealLocked = meal?.isLocked ?: false
     Card(modifier = modifier.background(color = MaterialTheme.colorScheme.surface)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -211,26 +229,15 @@ fun MealCard(index: Int, meal: Meal, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
         ) {
             Text(
-                "${index + 1}. ${meal.name}",
-                color = MaterialTheme.colorScheme.primary,
+                "${index + 1}. $mealName",
+                color = if (isMealLocked) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(3f)
             )
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.weight(1f)) {
-                IconButton(onClick = { }) {
-                    Icon(
-                        painter = painterResource(if (meal.isLocked) R.drawable.lock_closed_icon else R.drawable.lock_open_icon),
-                        contentDescription = "Locked icon."
-                    )
-                }
-                if (meal.recipeLink != null) {
-                    Spacer(modifier = Modifier.width(Spacing.spaceSmall))
-                    IconButton(onClick = { }) {
-                        Icon(
-                            painter = painterResource(R.drawable.link_icon),
-                            contentDescription = "Recipe link icon."
-                        )
-                    }
-                }
+            IconButton(onClick = { }) {
+                Icon(
+                    painter = painterResource(if (isMealLocked) R.drawable.lock_closed_icon else R.drawable.lock_open_icon),
+                    contentDescription = "Locked icon."
+                )
             }
         }
     }
@@ -240,7 +247,7 @@ fun MealCard(index: Int, meal: Meal, modifier: Modifier = Modifier) {
 @Composable
 fun NumMealsSelectorPreview() {
     NumMealsSelector(
-        updateNumMealsCallback = { x -> Unit }
+        updateNumMealsFun = { x -> Unit }
     )
 }
 
@@ -249,6 +256,6 @@ fun NumMealsSelectorPreview() {
 fun MealCardPreview() {
     MealCard(
         index = 0,
-        meal = Meal("Macaroni and Cheese", "https://www.southernliving.com/recipes/best-ever-macaroni-and-cheese-recipe")
+        meal = null
     )
 }
