@@ -1,5 +1,7 @@
 package io.github.ehmd28.chefsuggest
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,11 +42,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.ehmd28.chefsuggest.ui.theme.ChefSuggestTheme
 import kotlin.math.max
@@ -82,6 +87,7 @@ fun HomeScreen(
     appViewModel: ChefSuggestViewModel = viewModel(),
 ) {
     val uiState by appViewModel.uiState.collectAsState()
+    val context = LocalContext.current
     Column(modifier = modifier.padding(horizontal = Spacing.spaceMedium)) {
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
         NumMealsSelector(
@@ -92,7 +98,14 @@ fun HomeScreen(
             onClick = { appViewModel.generateMeals() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        ActionIcons()
+        ActionIcons(
+            onSave = {  },
+            onShow = {  },
+            onShare = {  },
+            onRefresh = {
+                appViewModel.updateAllMealsFromRemote()
+            },
+        )
         Spacer(modifier = Modifier.height(Spacing.spaceMedium))
         MealsList(uiState.selectedMeals, toggleLockAtIndex = { appViewModel.toggleLockAtIndex(it) })
     }
@@ -114,7 +127,13 @@ fun GenerateMealsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ActionIcons(modifier: Modifier = Modifier) {
+fun ActionIcons(
+    onSave: () -> Unit,
+    onShow: () -> Unit,
+    onShare: () -> Unit,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(horizontalArrangement = Arrangement.SpaceAround, modifier = modifier.fillMaxWidth()) {
         IconButton(onClick = {  }) {
             Icon(
@@ -242,7 +261,9 @@ fun MealCard(
                 .padding(Spacing.spaceSmall)
                 .fillMaxWidth()
         ) {
-            Row(modifier = Modifier.weight(3f).horizontalScroll(rememberScrollState())) {
+            Row(modifier = Modifier
+                .weight(3f)
+                .horizontalScroll(rememberScrollState())) {
                 Text(
                     "${index + 1}. $mealName",
                     color = if (isMealLocked) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,

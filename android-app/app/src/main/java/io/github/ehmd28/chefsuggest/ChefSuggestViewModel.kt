@@ -1,6 +1,10 @@
 package io.github.ehmd28.chefsuggest
 
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
+import com.github.kittinunf.fuel.Fuel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,48 +35,31 @@ class ChefSuggestViewModel : ViewModel() {
 
     /**
      * Fetches the list of meals from a statically hosted Google Sheets file.
-     *
-     * TODO: Implement HTTP fetch
      */
     fun updateAllMealsFromRemote() {
-        val mealNames = listOf(
-            "Cheeseburger Macaroni and Vegetable",
-            "Cheeseburger Sliders and Fries",
-            "Chicken Noodle Soup and Bread",
-            "Chicken or Beef Gyros",
-            "Chicken Spaghetti (Recipe: The Pioneer Woman)",
-            "Chicken Wings, Macaroni & Cheese, and Vegetable",
-            "Chicken, Chicken Rice, and Vegetables",
-            "Chicken, Corn Pudding, Collard Greens",
-            "Chili Cheese Dogs/Fries",
-            "Fettuccine Alfredo",
-            "Fried Chicken Sandwiches & Fries",
-            "Fried Rice (shrimp or chicken)",
-            "Grilled Cheese and Tomato Soup",
-            "Grilled Cheese Stuffed Burritos",
-            "Homemade Breakfast for Dinner",
-            "Homemade Pizza and Fries",
-            "Homemade Rice Bowls",
-            "Hot Dogs and Beans",
-            "Jollof Chicken and Rice",
-            "Lasagna and Vegetable",
-            "Lo Mein (shrimp or chicken)",
-            "Meatball Subs",
-            "Meatloaf, Mashed Potatoes, and Vegetable",
-            "Philly Cheesesteak Sloppy Joes",
-            "Quesadillas",
-            "Shredded BBQ Chicken and Macaroni and Cheese",
-            "Spaghetti with Meat Sauce and a Vegetable",
-            "Steak, Baked Potatoes, and Corn",
-            "Tacos",
-            "Tater Tot Casserole",
-            "Turkey Burgers/Fries",
-        )
-        internalState.update { currentState ->
-            currentState.copy(
-                allMeals = mealNames
-            )
+        fun updateInternalState(mealNames: List<String>) {
+            internalState.update { currentState ->
+                currentState.copy(
+                    allMeals = mealNames
+                )
+            }
         }
+        Fuel.get(GeneratorConstants.MEALS_LIST_TSV_URL).response { request, response, result ->
+            val (bytes, error) = result
+            if (error == null && bytes != null) {
+                val bytesAsStr = String(bytes)
+                val mealNames = parseMealNamesFromTsv(bytesAsStr)
+                updateInternalState(mealNames)
+            }
+        }
+    }
+
+    /**
+     * Parses the meal names from a TSV file which is statically hosted using Google Sheets. Since
+     * there is currently only one column, it's find to parse it like a normal list.
+     */
+    private fun parseMealNamesFromTsv(content: String): List<String> {
+        return content.split("\n") .map { it.trim() }
     }
 
     fun updateNumMeals(n: Int) {

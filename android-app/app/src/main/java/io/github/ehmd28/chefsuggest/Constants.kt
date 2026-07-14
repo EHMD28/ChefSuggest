@@ -7,6 +7,7 @@ object GeneratorConstants {
     const val DEFAULT_NUM_MEALS = 5
     const val MIN_NUM_MEALS = 1
     const val MAX_NUM_MEALS = 20
+    const val MEALS_LIST_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5Njea8v0uttwP3xvlWPF7iK_bO8DX7jxBzMu_A37WBYZWlASY32W99rbVCsSeZyl-_b1-ugR8iqmc/pub?gid=0&single=true&output=tsv"
 }
 
 object Spacing {
