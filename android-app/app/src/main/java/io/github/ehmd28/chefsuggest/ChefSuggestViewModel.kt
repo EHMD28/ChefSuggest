@@ -59,7 +59,8 @@ class ChefSuggestViewModel : ViewModel() {
      * there is currently only one column, it's find to parse it like a normal list.
      */
     private fun parseMealNamesFromTsv(content: String): List<String> {
-        return content.split("\n") .map { it.trim() }
+        // Purpose of the `drop(1)` call is to remove the header row.
+        return content.split("\n").drop(1).map { it.trim() }
     }
 
     fun updateNumMeals(n: Int) {
