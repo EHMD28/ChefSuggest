@@ -63,6 +63,12 @@ class ChefSuggestViewModel : ViewModel() {
         return content.split("\n").drop(1).map { it.trim() }
     }
 
+    fun generateSelectedMealsFile(): String {
+        val selectedMealNames = internalState.value.selectedMeals.filterNotNull().map { it.name }
+        val content = selectedMealNames.joinToString("\n")
+        return content
+    }
+
     fun updateNumMeals(n: Int) {
         val selected = internalState.value.selectedMeals.toMutableList()
         while (selected.size < n) { selected.add(null) }

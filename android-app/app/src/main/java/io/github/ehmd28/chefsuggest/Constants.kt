@@ -2,6 +2,9 @@ package io.github.ehmd28.chefsuggest
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.char
 
 object GeneratorConstants {
     const val DEFAULT_NUM_MEALS = 5
@@ -10,7 +13,7 @@ object GeneratorConstants {
     const val MEALS_LIST_TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5Njea8v0uttwP3xvlWPF7iK_bO8DX7jxBzMu_A37WBYZWlASY32W99rbVCsSeZyl-_b1-ugR8iqmc/pub?gid=0&single=true&output=tsv"
 }
 
-object Spacing {
+object SpacingConstants {
     val none: Dp = 0.dp
     val spaceXXSmall: Dp = 2.dp
     val spaceExtraSmall: Dp = 4.dp
@@ -20,4 +23,22 @@ object Spacing {
     val spaceExtraLarge: Dp = 64.dp
     val spaceXXLarge: Dp = 128.dp
     val spaceXXXLarge: Dp = 256.dp
+}
+
+object DateTimeConstants {
+    val displayFormat = LocalDateTime.Format {
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char(' ')
+        day()
+        chars(", ")
+        year()
+        chars(" - ")
+        amPmHour()
+        char(':')
+        minute()
+        char(':')
+        second()
+        char(' ')
+        amPmMarker(am = "AM", pm = "PM")
+    }
 }
