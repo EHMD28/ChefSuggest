@@ -32,28 +32,33 @@ import java.io.File
 fun ViewAllSavedMealListsScreen(
     context: Context,
     onViewSingleList: (String) -> Unit,
-    onNavBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(horizontal = SpacingConstants.spaceMedium)) {
-        IconButton(onClick = onNavBack) {
-            Icon(
-                painter = painterResource(R.drawable.back_arrow_icon),
-                contentDescription = "Back button"
-            )
-        }
         Spacer(Modifier.height(SpacingConstants.spaceMedium))
         SavedMealsList(context, onViewSingleList = onViewSingleList, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-private fun SavedMealsList(context: Context, onViewSingleList: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun SavedMealsList(
+    context: Context, onViewSingleList: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val validFiles = context.fileList().filter { fileName ->
+        try {
+            LocalDateTime.parse(fileName)
+            true
+        } catch(_: IllegalArgumentException) {
+            false
+        }
+    }
     LazyColumn(verticalArrangement = spacedBy(SpacingConstants.spaceMedium), modifier = modifier) {
-        items(context.fileList()) {
+        items(validFiles.sortedDescending()) {
             SavedListCard(fileName = it, context = context, onViewSingleList = onViewSingleList)
         }
     }
+    Spacer(modifier = Modifier.height(SpacingConstants.spaceMedium))
 }
 
 @Composable

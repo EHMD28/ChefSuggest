@@ -9,4 +9,6 @@ sealed class AppRoutes {
     object ViewAllSavedMealLists
     @Serializable
     data class ViewSingleSavedMealList(val fileName: String)
+    @Serializable
+    object SavedListPopup
 }

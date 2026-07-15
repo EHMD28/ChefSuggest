@@ -1,8 +1,5 @@
 package io.github.ehmd28.chefsuggest
 
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.github.kittinunf.fuel.Fuel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +41,7 @@ class ChefSuggestViewModel : ViewModel() {
                 )
             }
         }
-        Fuel.get(GeneratorConstants.MEALS_LIST_TSV_URL).response { request, response, result ->
+        Fuel.get(GeneratorConstants.MEALS_LIST_TSV_URL).response { _, _, result ->
             val (bytes, error) = result
             if (error == null && bytes != null) {
                 val bytesAsStr = String(bytes)
@@ -65,6 +62,14 @@ class ChefSuggestViewModel : ViewModel() {
 
     fun generateSelectedMealsFile(): String {
         val selectedMealNames = internalState.value.selectedMeals.filterNotNull().map { it.name }
+        val content = selectedMealNames.joinToString("\n")
+        return content
+    }
+
+    fun generatePrettySelectedMealsFile(): String {
+        val selectedMealNames = internalState.value.selectedMeals
+            .filterNotNull()
+            .mapIndexed { index, data ->  "${index + 1}. ${data.name}" }
         val content = selectedMealNames.joinToString("\n")
         return content
     }

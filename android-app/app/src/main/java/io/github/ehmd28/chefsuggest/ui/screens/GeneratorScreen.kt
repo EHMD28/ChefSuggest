@@ -1,6 +1,7 @@
 package io.github.ehmd28.chefsuggest.ui.screens
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -34,8 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.ehmd28.chefsuggest.ChefSuggestViewModel
 import io.github.ehmd28.chefsuggest.GeneratorConstants
@@ -56,23 +59,35 @@ fun HomeScreen(
     context: Context,
     modifier: Modifier = Modifier,
     appViewModel: ChefSuggestViewModel,
-    onViewSavedMealLists: () -> Unit
+    onViewSavedMealLists: () -> Unit,
+    onSaveMealList: () -> Unit,
 ) {
     val uiState by appViewModel.uiState.collectAsState()
     Column(modifier = modifier.padding(horizontal = SpacingConstants.spaceMedium)) {
         Spacer(modifier = Modifier.height(SpacingConstants.spaceMedium))
         NumMealsSelector(
-            updateNumMealsFun = { n -> appViewModel.updateNumMeals(n) }
+            updateNumMealsFn = { n -> appViewModel.updateNumMeals(n) }
         )
         Spacer(modifier = Modifier.height(SpacingConstants.spaceMedium))
         GenerateMealsButton(
             onClick = { appViewModel.generateMeals() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        ActionIcons(
-            onSave = { handleSave(content = appViewModel.generateSelectedMealsFile(), context = context) },
+        ActionIconButtons(
+            onSave = {
+                handleSave(
+                    content = appViewModel.generateSelectedMealsFile(),
+                    context = context,
+                )
+                onSaveMealList()
+            },
             onShow = onViewSavedMealLists,
-            onShare = {  },
+            onShare = {
+                handleShare(
+                    content = appViewModel.generatePrettySelectedMealsFile(),
+                    context = context
+                )
+            },
             onRefresh = { appViewModel.updateAllMealsFromRemote() },
         )
         Spacer(modifier = Modifier.height(SpacingConstants.spaceMedium))
@@ -90,69 +105,81 @@ private fun handleSave(content: String, context: Context) {
     }
 }
 
-//@OptIn(ExperimentalTime::class)
-//private fun handleSave(content: String, context: Context) {
-//    val currentInstant = Clock.System.now()
-//    val today = currentInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-//    val format = LocalDateTime.Format {
-//        monthName(MonthNames.ENGLISH_ABBREVIATED)
-//        char(' ')
-//        day()
-//        chars(", ")
-//        year()
-//        chars(" - ")
-//        amPmHour()
-//        char(':')
-//        minute()
-//        char(':')
-//        second()
-//        char(' ')
-//        amPmMarker(am = "AM", pm = "PM")
-//    }
-//    val fileName = today.format(format)
-//    context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
-//        it.write(content.toByteArray())
-//    }
-//}
+private fun handleShare(content: String, context: Context) {
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, content)
+        type = "text/plain"
+    }
+    val title = context.resources.getString(R.string.send_chooser_title)
+    val chooser = Intent.createChooser(sendIntent, title)
+    val pm = context.packageManager
+    if (sendIntent.resolveActivity(pm) != null) {
+        context.startActivity(chooser)
+    }
+}
 
 @Composable
-fun NumMealsSelector(updateNumMealsFun: (Int) -> Unit, modifier: Modifier = Modifier) {
+fun NumMealsSelector(updateNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
     var numMeals by remember { mutableIntStateOf(GeneratorConstants.DEFAULT_NUM_MEALS) }
 
     fun internalUpdateNumMeals(n: Int) {
         numMeals = n
-        updateNumMealsFun(numMeals)
+        updateNumMealsFn(numMeals)
     }
 
-    Row (verticalAlignment = Alignment.CenterVertically,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = modifier
             .fillMaxWidth()
     ) {
-
-        NumMealsSelectorDecrementButton(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(1f))
-        NumMealsSelectorTextField(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(3f))
-        NumMealsSelectorIncrementButton(numMeals, ::internalUpdateNumMeals, modifier = Modifier.weight(1f))
+        NumMealsSelectorDecrementButton(
+            numMeals,
+            ::internalUpdateNumMeals,
+            modifier = Modifier.weight(1f)
+        )
+        NumMealsSelectorTextField(
+            numMeals,
+            ::internalUpdateNumMeals,
+            modifier = Modifier.weight(3f)
+        )
+        NumMealsSelectorIncrementButton(
+            numMeals,
+            ::internalUpdateNumMeals,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
-// TODO: Fix input bugs (automatically setting value to min/max while typing)
 @Composable
-private fun NumMealsSelectorTextField(numMeals: Int, updateNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+private fun NumMealsSelectorTextField(
+    numMeals: Int,
+    updateNumMealsFn: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val focusManager = LocalFocusManager.current
     OutlinedTextField(
         label = { Text("Number of Meals to Generate") },
         value = numMeals.toString(),
         onValueChange = { value ->
-            try {
-                var valueAsInt = if (value.isEmpty()) GeneratorConstants.MIN_NUM_MEALS else value.toInt()
-                valueAsInt = max(min(valueAsInt, GeneratorConstants.MAX_NUM_MEALS), GeneratorConstants.MIN_NUM_MEALS)
-                updateNumMealsFn(valueAsInt)
-            }
-            catch (_: NumberFormatException) { }
+            val valueAsInt =
+                if (value.isEmpty()) GeneratorConstants.MIN_NUM_MEALS else value.toInt()
+            updateNumMealsFn(valueAsInt)
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
         keyboardActions = KeyboardActions(onDone = {
+            try {
+                val constrainedValue = max(
+                    min(numMeals, GeneratorConstants.MAX_NUM_MEALS),
+                    GeneratorConstants.MIN_NUM_MEALS
+                )
+                updateNumMealsFn(constrainedValue)
+            } catch (_: NumberFormatException) {
+            }
             focusManager.clearFocus()
         }),
         singleLine = true,
@@ -161,28 +188,36 @@ private fun NumMealsSelectorTextField(numMeals: Int, updateNumMealsFn: (Int) -> 
 }
 
 @Composable
-private fun NumMealsSelectorDecrementButton(numMeals: Int, updatedNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+private fun NumMealsSelectorDecrementButton(
+    numMeals: Int,
+    updatedNumMealsFn: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     IconButton(onClick = {
         val n = max(numMeals - 1, GeneratorConstants.MIN_NUM_MEALS)
         updatedNumMealsFn(n)
     }, modifier = modifier) {
         Icon(
             painter = painterResource(R.drawable.remove_icon),
-            contentDescription = "Decrease the number of meals.",
+            contentDescription = stringResource(R.string.num_meals_decrement_button),
             tint = MaterialTheme.colorScheme.primary,
         )
     }
 }
 
 @Composable
-private fun NumMealsSelectorIncrementButton(numMeals: Int, updatedNumMealsFn: (Int) -> Unit, modifier: Modifier = Modifier) {
+private fun NumMealsSelectorIncrementButton(
+    numMeals: Int,
+    updatedNumMealsFn: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     IconButton(onClick = {
         val n = min(numMeals + 1, GeneratorConstants.MAX_NUM_MEALS)
         updatedNumMealsFn(n)
     }, modifier = modifier) {
         Icon(
             painter = painterResource(R.drawable.add_icon),
-            contentDescription = "Increase the number of meals",
+            contentDescription = stringResource(R.string.increment_num_meals_button),
             tint = MaterialTheme.colorScheme.primary,
         )
     }
@@ -203,9 +238,8 @@ fun GenerateMealsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-// TODO: Refactor each button into its own composable.
 @Composable
-fun ActionIcons(
+fun ActionIconButtons(
     onSave: () -> Unit,
     onShow: () -> Unit,
     onShare: () -> Unit,
@@ -216,32 +250,36 @@ fun ActionIcons(
         IconButton(onClick = onSave) {
             Icon(
                 painter = painterResource(R.drawable.save_icon),
-                contentDescription = "Save meals icon.",
+                contentDescription = stringResource(R.string.save_meals_icon),
             )
         }
         IconButton(onClick = onShow) {
             Icon(
                 painter = painterResource(R.drawable.show_icon),
-                contentDescription = "Show meals icon.",
+                contentDescription = stringResource(R.string.show_meals_icon),
             )
         }
         IconButton(onClick = onShare) {
             Icon(
                 painter = painterResource(R.drawable.share_icon),
-                contentDescription = "Share meals icon.",
+                contentDescription = stringResource(R.string.share_meals_icon),
             )
         }
         IconButton(onClick = onRefresh) {
             Icon(
                 painter = painterResource(R.drawable.refresh_icon),
-                contentDescription = "Refresh meals icon.",
+                contentDescription = stringResource(R.string.refresh_meals_icon),
             )
         }
     }
 }
 
 @Composable
-fun MealsList(meals: List<MealCardData?>, modifier: Modifier = Modifier, toggleLockAtIndex: (Int) -> Unit) {
+fun MealsList(
+    meals: List<MealCardData?>,
+    modifier: Modifier = Modifier,
+    toggleLockAtIndex: (Int) -> Unit
+) {
     LazyColumn(verticalArrangement = spacedBy(SpacingConstants.spaceMedium), modifier = modifier) {
         itemsIndexed(meals) { index, meal ->
             MealCard(index, meal = meal, toggleLockAtIndex = toggleLockAtIndex)
@@ -269,9 +307,11 @@ fun MealCard(
                 .padding(SpacingConstants.spaceSmall)
                 .fillMaxWidth()
         ) {
-            Row(modifier = Modifier
-                .weight(1f)
-                .horizontalScroll(rememberScrollState())) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(rememberScrollState())
+            ) {
                 Text(
                     "${index + 1}. $mealName",
                     color = if (isMealLocked) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
@@ -280,10 +320,26 @@ fun MealCard(
             IconButton(onClick = { toggleLockAtIndex(index) }) {
                 Icon(
                     painter = painterResource(if (isMealLocked) R.drawable.lock_closed_icon else R.drawable.unlocked_icon),
-                    contentDescription = "Locked icon."
+                    contentDescription = stringResource(R.string.locked_icon)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SavedMealListPopup() {
+    val cardBackground = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+    Card(
+        colors = CardDefaults.cardColors(containerColor = cardBackground),
+    ) {
+        Text(
+            text = "Meal List Saved",
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier.padding(SpacingConstants.spaceMedium)
+        )
     }
 }
 
@@ -291,7 +347,7 @@ fun MealCard(
 @Composable
 fun NumMealsSelectorPreview() {
     NumMealsSelector(
-        updateNumMealsFun = { }
+        updateNumMealsFn = { }
     )
 }
 

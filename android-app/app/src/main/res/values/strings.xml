@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Chef Suggest</string>
+    <string name="send_chooser_title">Share meal list with</string>
+    <string name="num_meals_decrement_button">Decrease the number of meals.</string>
+    <string name="back_arrow_button">Back arrow button.</string>
+    <string name="increment_num_meals_button">Increase the number of meals</string>
+    <string name="save_meals_icon">Save meals icon.</string>
+    <string name="show_meals_icon">Show meals icon.</string>
+    <string name="share_meals_icon">Share meals icon.</string>
+    <string name="refresh_meals_icon">Refresh meals icon.</string>
+    <string name="locked_icon">Locked icon.</string>
 </resources>
